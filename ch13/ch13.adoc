@@ -1,7 +1,7 @@
 == 13 Building projects in Haskell
 Used `stack` instead of `cabal`
 
-Files at https://github.com/lukleh/Haskell-Book-Excercises/ch13
+Files at https://github.com/lukleh/haskell-book-excercises/ch13
 
 https://github.com/commercialhaskell/stack/blob/master/doc/faq.md
 
@@ -27,7 +27,7 @@ http://docs.haskellstack.org/en/stable/README.html
 . `stack exec hello-haskell-exe`
 . if you need REPL with project loaded `stack repl`
 
-Sources at https://github.com/lukleh/Haskell-Book-Excercises/ch13/hello-haskell
+Sources at https://github.com/lukleh/haskell-book-excercises/ch13/hello-haskell
 
 === 13.4 Importing modules
 ==== Intermission: Check your understanding
@@ -42,7 +42,7 @@ Sources at https://github.com/lukleh/Haskell-Book-Excercises/ch13/hello-haskell
 === 13.8 Loading code from another project
 
 ==== call-em-up
-Sources at https://github.com/lukleh/Haskell-Book-Excercises/ch13/call-em-up
+Sources at https://github.com/lukleh/haskell-book-excercises/ch13/call-em-up
 
 call-em-up sees hello-haskell by including `- ../hello-haskell` in `packages` section in `stack.yaml`. Not sure if this is the right way.
 
@@ -70,7 +70,7 @@ include::ch13_13.9_2.hs[]
 === 13.15 Chapter exercises
 
 ==== Hangman game logic
-Sources at https://github.com/lukleh/Haskell-Book-Excercises/ch13/hangman
+Sources at https://github.com/lukleh/haskell-book-excercises/ch13/hangman
 
 To count only incorrect guesses, I have modified `gameOver` condition to `if (length guessed - length (filter isJust discovered)) > 7 then`
 
