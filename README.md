@@ -1,4 +1,4 @@
-= Exercises and notes for book "Haskell Programming from first principles" - Unofficial
+# Exercises and notes for book "Haskell Programming from first principles" - Unofficial
 
 Rendered version at https://lukleh.github.io/haskell-book-exercises
 
