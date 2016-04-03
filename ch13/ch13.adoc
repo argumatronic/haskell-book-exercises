@@ -1,0 +1,108 @@
+== 13 Building projects in Haskell
+Used `stack` instead of `cabal`
+
+Files at GITHUB/ch13
+
+https://github.com/commercialhaskell/stack/blob/master/doc/faq.md
+
+https://github.com/commercialhaskell/stack/blob/master/doc/GUIDE.md
+
+http://docs.haskellstack.org/en/stable/README.html
+
+==== Differences between cabal and stack
+. `stack new proj` instead of `mkdir proj; cd proj; cabal init`
+. `stack` creates `Lib` automatically
+. `cabal sandbox init` no need
+. `stack build`
+. `stack exec proj-exe`
+. `stack ghci` or `stack repl` - they appear to be identical
+
+=== 13.2 Managing projects with Cabal
+
+==== hello-haskell
+. `stack new hello-haskell`
+. `cd hello-haskell`
+. make changes needed
+. `stack build`
+. `stack exec hello-haskell-exe`
+. if you need REPL with project loaded `stack repl`
+
+Sources at GITHUB/ch13/hello-haskell
+
+=== 13.4 Importing modules
+==== Intermission: Check your understanding
+. `forever` and `when`
+. all the import without `qualified` keyword
+. everything exported in `Database.Blacktip.Types`
+. details
+.. just look for what is after the `as` keyword in the imports
+.. `Filesystem`
+.. `Control.Monad`
+
+=== 13.8 Loading code from another project
+
+==== call-em-up
+Sources at GITHUB/ch13/call-em-up
+
+call-em-up sees hello-haskell by including `- ../hello-haskell` in `packages` section in `stack.yaml`. Not sure if this is the right way.
+
+=== 13.9 do syntax and IO
+
+. error as expected
++
+[source]
+----
+include::ch13_13.9_0.hs[]
+----
+. consumes two characters and prints `True` or `False`
++
+[source]
+----
+include::ch13_13.9_1.hs[]
+----
+. consumes two characters and prints `True` if true, or nothing.
++
+[source]
+----
+include::ch13_13.9_2.hs[]
+----
+
+=== 13.15 Chapter exercises
+
+==== Hangman game logic
+Sources at GITHUB/ch13/hangman
+
+To count only incorrect guesses, I have modified `gameOver` condition to `if (length guessed - length (filter isJust discovered)) > 7 then`
+
+==== Modifying code
+. Caesar and Vigenere cyphers taking input from user
++
+[source]
+----
+include::ch13_13.15_1.hs[]
+----
++
+[source]
+----
+include::ch13_13.15_0.hs[]
+----
+. using `exitSuccess` in palindrome
++
+[source]
+----
+include::ch13_13.15_2.hs[]
+----
+. palindrome on sentences
++
+WARNING: not sure I get the assignment other than using `toLower`
++
+[source]
+----
+include::ch13_13.15_3.hs[]
+----
+. `gimmePerson`
++
+[source]
+----
+include::ch13_13.15_4.hs[]
+----

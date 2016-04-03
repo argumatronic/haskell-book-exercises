@@ -1,0 +1,355 @@
+== 11 Algebraic datatypes
+=== 11.4 Data constructors and values
+
+For data types
+[source]
+----
+include::ch11_11.4_0.hs[]
+----
+. `*Doggies*` is type constructor
+. kind of `*Doggies*` is `*pass:[* -> *]*`
+. kind of `*Doggies String*` is `*pass:[*]*`
+. type of `*Husky 10*` is `*Num a => Doggies a*`
+. type of `*Husky (10 :: Integer)*` is `*Doggies Integer*`
+. type of `*Mastiff "Scooby Doo"*` is `*Doggies String*`
+. `*DogueDeBordeaux*` is both type and data constructor
+. type of `*DogueDeBordeaux*` is `*doge -> DogueDeBordeaux doge*`
+. type of `*DogueDeBordeaux "doggie!"*` is `*DogueDeBordeaux String*`
+
+=== 11.5 What’s a type and what’s data?
+
+[source]
+----
+include::ch11_11.5_0.hs[]
+----
+. type of `*myCar*` is `*Vehicle*`
+. define functions
++
+[source]
+----
+include::ch11_11.5_1.hs[]
+----
+. define function (error on non Car)
++
+[source]
+----
+include::ch11_11.5_2.hs[]
+----
+. `*Plane Airline*` for `*getManu*` error is `Non-exhaustive patterns in function getManu`. You can add all catching pattern, but it would have to end up in error anyway, as there is no `Manufacturer` for non-Car value.
+. add size for `*Plane*`, can be done similary as `*Price*` with `*Double*` instead of `*Integer*`
++
+[source]
+----
+include::ch11_11.5_3.hs[]
+----
+
+=== 11.7 What makes these datatypes algebraic?
+==== Intermission: Exercises
+
+. cardinality 1 `*data PugType = PugData*`
+. cardinality 3 
++
+[source]
+----
+data Airline =
+      PapuAir
+    | CatapultsR'Us
+    | TakeYourChancesUnited
+----
+. `*Int16*` has cardinality `65535`
+. `*Int*` is instance of `*Bounded*`, therefore cardinality can be determined. `*Integer*` does not have bounds
+. `*Int8*` has `256` values, which corresponds to `2 ^ 8 = 256`
+
+==== Simple datatypes with nullary data constructors
+
+[source]
+----
+data Example = MakeExample deriving Show
+----
+
+. `*MakeExample*` has type `*Example*`. `*:t Example*` gives error `Not in scope: data constructor ‘Example’`
+. `*:i Example*` shows that it is instance of `*Show*` typeclass
+. `*:t MakeExample*` gives `Int -> Example`
+
+==== newtype
+
+type synonym does not work
+[source]
+----
+include::ch11_11.7_0.hs[]
+----
+GHC pragma `GeneralizedNewtypeDeriving` works for `tooMany (Goats 45)` even without declaring an instance. Reusing `Int` instance.
+[source]
+----
+include::ch11_11.7_1.hs[]
+----
+
+==== Intermission: Exercises
+
+. without `*newtype*`
++
+[source]
+----
+include::ch11_11.7_2.hs[]
+----
++
+with `*newtype*`
++
+[source]
+----
+include::ch11_11.7_3.hs[]
+----
+. `*TooMany*` instance for `*(Int, Int)*`, sum the values
++
+[source]
+----
+include::ch11_11.7_4.hs[]
+----
+. `*TooMany*` instance for `*(Num a, TooMany a) => (a, a)*`
++
+NOTE: `TooMany a` as class constraint means we know what to do with `toomany x`. If we use `(n + n') > 42` as the implementation, then we get error as there is no `Ord` for `TooMany`.
++
+[source]
+----
+include::ch11_11.7_5.hs[]
+----
+
+WARNING: All of the following breaks. Ambiguous type or could not deduce class constraint.
+[source]
+----
+include::ch11_11.7_6.hs[]
+----
+
+=== 11.8 Sum types
+==== Intermission: Exercises
+
+. cardinality is 4. `Bool` is 2 and sum type adds
++
+[source]
+----
+data BigSmall =
+      Big Bool
+    | Small Bool
+    deriving (Eq, Show)
+----
+. cardinality is 258. `Int8` is 256, `Bool` is 2, sum type adds. `let myNumba = Numba (-128)` breaks, details in https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/syntax-extns.html `NegativeLiterals`. Number out of `Int8` range gives error `Literal 1000 is out of the Int8 range -128..127` for `1000 :: Int8`
++
+[source]
+----
+import Data.Int
+
+data NumberOrBool =
+      Numba Int8
+    | BoolyBool Bool
+    deriving (Eq, Show)
+----
+
+=== 11.9 Product types
+==== Intermission: Jammin Exercises
+
+[source]
+----
+include::ch11_11.9_0.hs[]
+----
+
+=== 11.10 Normal form
+
+[source]
+----
+include::ch11_11.10_2.hs[]
+----
+`*BookType*` gone
+[source]
+----
+include::ch11_11.10_3.hs[]
+----
+
+==== Exercises
+
+this code
+[source]
+----
+include::ch11_11.10_0.hs[]
+----
+`Garden` in normal form
+[source]
+----
+include::ch11_11.10_1.hs[]
+----
+
+=== 11.11 Constructing and deconstructing values
+
+[source]
+----
+include::ch11_11.11_0.hs[]
+----
+
+=== 11.12 Function type is exponential
+==== Exponentiation in what order?
+[source]
+----
+include::ch11_11.12_0.hs[]
+----
+
+==== Intermission: Exercises
+
+. `4 + 4 = 8`
++
+[source]
+----
+data Quad =
+      One
+    | Two
+    | Three
+    | Four
+    deriving (Eq, Show)
+eQuad :: Either Quad Quad
+eQuad = ???
+----
+. `4 * 4 = 16`
++
+[source]
+----
+prodQuad :: (Quad, Quad)
+----
+. `4 ^ 4 = 256`
++
+[source]
+----
+funcQuad :: Quad -> Quad
+----
+. `2 * 2 * 2 = 16`
++
+[source]
+----
+prodTBool :: (Bool, Bool, Bool)
+----
+. `(2 ^ 2) ^ 2 = 16`
++
+[source]
+----
+gTwo :: Bool -> Bool -> Bool
+----
+. `(4 ^ 4) ^ 2 = 65536`
++
+[source]
+----
+fTwo :: Bool -> Quad -> Quad
+----
+
+=== 11.15 Binary Tree
+==== Write map for BinaryTree
+
+[source]
+----
+include::ch11_11.15_0.hs[]
+----
+
+==== Convert binary trees to lists
+Simple solution
+[source]
+----
+include::ch11_11.15_1.hs[]
+----
+Eventually cooler and better solution
+[source]
+----
+include::ch11_11.15_1_0.hs[]
+----
+
+==== Write foldr for BinaryTree
+
+The big shift was to realize that the folding function needs to take 3 arguments, not the usual 2 as seen in folds so far.
+[source]
+----
+include::ch11_11.15_2.hs[]
+----
+
+The book gives this signature `foldTree pass:[::] (a -> b -> b) -> b -> BinaryTree a -> b` though :/, let's do as the book says.
+[source]
+----
+include::ch11_11.15_2_0.hs[]
+----
+WARNING: But this way you cannot recreate the original tree!!!
+
+==== Rewrite map for BinaryTree
+
+3 parameter fold first
+[source]
+----
+include::ch11_11.15_3.hs[]
+----
+
+2 parameter fold - BROKEN
+
+WARNING: as mentioned above, this fold ruines the structure
+[source]
+----
+include::ch11_11.15_3_0.hs[]
+----
+
+=== 11.16 Chapter Exercises
+==== Multiple choice
+
+. a) `*Weekday*` is a type with five data constructors
++
+[source]
+----
+data Weekday =
+      Monday
+    | Tuesday
+    | Wednesday
+    | Thursday
+    | Friday
+----
+. c) type of `*f Friday = "Miller Time"*` is `*f :: Weekday -> String*`
+. b) Types defined with the `*data*` keyword must begin with a capital letter
+. c) The function `*g xs = xs !! (length xs - 1)*` delivers the final element of `*xs*`
+
+==== Ciphers
+
+Vigenère cipher
+[source]
+----
+include::ch11_11.16_0.hs[]
+----
+
+==== As-patterns
+
+. `*isSubsequenceOf*`
++
+[source]
+----
+include::ch11_11.16_1.hs[]
+----
+. `*capitalizeWords*`
++
+[source]
+----
+include::ch11_11.16_2.hs[]
+----
+
+==== Language exercises
+
+CAUTION: This one was more tricky - review?
+
+[source]
+----
+include::ch11_11.16_3.hs[]
+----
+
+==== Phone exercise
+
+WARNING: don't know!
+
+[source]
+----
+include::ch11_11.16_4.hs[]
+----
+
+==== Hutton’s Razor
+
+[source]
+----
+include::ch11_11.16_5.hs[]
+----

@@ -1,0 +1,173 @@
+== 4 Basic datatypes
+=== 4.2 Anatomy of a data declaration
+
+given data type, answer
+[source]
+----
+data Mood = Blah | Woot deriving Show
+----
+. type constructor is `Mood`
+. values are `Blah` and `Woot`
+. `:: Mood -> Woot` to `:: Mood -> Mood`, as `Woot` is value, not type
+. change mood
++
+[source]
+----
+include::ch04_4.2_0.hs[]
+----
+. done :)
+
+=== 4.4 Comparing values
+==== Intermission: Exercises
+. bug
++
+[source]
+----
+not True && true
+-- fix
+not True && True
+----
+. bug
++
+[source]
+----
+not (x = 6)
+-- fix
+not (x == 6)
+----
+. correct
++
+[source]
+----
+(1 * 2) > 5
+----
+. bug
++
+[source]
+----
+[Merry] > [Happy]
+-- fix
+["Merry"] > ["Happy"]
+----
+. bug
++
+[source]
+----
+[1, 2, 3] ++ "look at me!"
+-- fix
+['1', '2', '3'] ++ "look at me!"
+----
+
+=== 4.7 Chapter Exercises
+
+[source]
+----
+awesome = ["Papuchon", "curry", "Haskell"]
+alsoAwesome = ["Quake", "The Simons"]
+allAwesome = [awesome, alsoAwesome]
+----
+
+. length
+.. type signature
++
+[source]
+----
+:: [a] -> Int
+----
+.. takes one argument
+.. result is `Int`
+. results
+.. `length [1, 2, 3, 4, 5] == 5`
+.. `length [(1, 2), (2, 3), (3, 4)] == 3`
+.. `length allAwesome == 2`
+.. `length (concat allAwesome) == 5`
+. second breaks
++
+[source]
+----
+-- works
+6 / 3
+-- both values need to be Fractional, length returns Int
+6 / length [1, 2, 3]
+----
+. fixed previous example
++
+[source]
+----
+6 `div` length [1, 2, 3]
+----
+. `2 + 3 == 5` type is `Bool` and result is `True` as `5 == 5`
+. type is `Bool`, result is `False` as `8 /= 5`
++
+[source]
+----
+Prelude> let x = 5
+Prelude> x + 3 == 5
+----
+. as follows
++
+[source]
+----
+Prelude> length allAwesome == 2
+-- works - True
+Prelude> length [1, 'a', 3, 'b']
+-- breaks on types, list cannot be heterogenic
+Prelude> length allAwesome + length awesome
+-- works - 5
+Prelude> (8 == 8) && ('b' < 'a')
+-- works - False
+Prelude> (8 == 8) && 9
+-- breaks - 9 is not a Bool
+----
+. palidrome function
++
+[source]
+----
+include::ch04_4.7_0.hs[]
+----
+. return absolute value
++
+[source]
+----
+include::ch04_4.7_1.hs[]
+----
+. tuple function
++
+[source]
+----
+include::ch04_4.7_2.hs[]
+----
+
+==== Reading Syntax
+
+. length + 1
++
+[source]
+----
+include::ch04_4.7_3.hs[]
+----
+. identity
++
+[source]
+----
+\x -> x
+----
+. head
++
+[source]
+----
+\ (x:xs) -> x
+----
+. fst
++
+[source]
+----
+f (a, b) = a
+----
+
+==== Match the function names to their types
+
+. c) `Show a => a -> String`
+. b) `Eq a => a -> a -> Bool`
+. a) `(a, b) -> a`
+. d) `Num a => a -> a -> a`

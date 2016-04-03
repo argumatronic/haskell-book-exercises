@@ -1,0 +1,129 @@
+== 3 String
+=== 3.3 Printing simple things
+==== Intermission: Exercises
+all in scope
+
+. `y` in scope for `z`
+. `h` is not in scope for `g`
+. cannot be laoded with error: Not in scope: ‘d’
+. `r` and `p` are in scope for `area`
+
+=== 3.4 Type sigmatures of concatenation functions
+
+fix errors
+[source]
+----
+++ [1, 2, 3] [4, 5, 6]
+-- fix
+(++) [1, 2, 3] [4, 5, 6]
+
+'<3' ++ ' Haskell'
+--fix
+"<3" ++ " Haskell"
+
+concat ["<3", " Haskell"]
+-- working
+----
+
+=== 3.5 Concatenation and scoping
+`Print3Broken` can be fixed simply by moving `greeting = "Yarrrrr"` to top level.
+
+=== 3.7 Chapter Exercises
+==== Readinx syntax
+
+fix errors
+[source]
+----
+concat [[1, 2, 3], [4, 5, 6]]
+-- working
+
+++ [1, 2, 3] [4, 5, 6]
+-- fix
+(++) [1, 2, 3] [4, 5, 6]
+
+(++) "hello" " world"
+-- working
+
+["hello" ++ " world]
+-- fix
+["hello" ++ " world"]
+
+4 !! "hello"
+-- fix
+"hello" !! 4
+
+(!!) "hello" 4
+-- working
+
+take "4 lovely"
+-- fix
+take 4 "lovely"
+
+take 3 "awesome"
+-- working
+----
+
+pair code and results
+[source]
+----
+-- a) - d)
+concat [[1 * 6], [2 * 6], [3 * 6]]
+[6,12,18]
+
+-- b) - c)
+"rain" ++ drop 2 "elbow"
+"rainbow"
+
+-- c) - e)
+10 * head [1, 2, 3]
+10
+
+-- d) - a)
+(take 3 "Julie") ++ (tail "yes")
+"Jules"
+
+-- e) - b)
+concat [tail [1, 2, 3], tail [4, 5, 6], tail [7, 8, 9]]
+[2,3,5,6,8,9]
+----
+
+==== Building functions
+
+. list manipulations
++
+[source]
+----
+-- a)
+"Curry is awesome" ++ "!" == "Curry is awesome!"
+
+-- b)
+"Curry is awesome!" !! 4 == "y"
+
+-- c)
+drop 9 "Curry is awesome!" == "awesome!"
+----
+. same code in file
++
+[source]
+----
+include::ch03_3.7_1.hs[]
+----
+. third letter
++
+[source]
+----
+include::ch03_3.7_2.hs[]
+----
+. letter index
++
+[source]
+----
+include::ch03_3.7_2_1.hs[]
+----
+. make reverse function using `drop` and `take` for a fixed input. this point includes point 6.
++
+[source]
+----
+include::ch03_3.7_3.hs[]
+----
+

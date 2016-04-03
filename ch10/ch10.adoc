@@ -1,0 +1,142 @@
+== 10 Folding lists
+=== 10.5 Fold left
+==== Intermission: Exercises
+
+. b) and c) have the same result, a) has error
++
+[source]
+----
+foldr (*) 1 [1..5]
+-- b) 
+foldl (flip (*)) 1 [1..5]
+-- c)
+foldl (*) 1 [1..5]
+----
+. evaluation steps of `foldl (flip (*)) 1 [1..3]`
++
+[source]
+----
+foldl (flip (*)) 1 [1..3]
+ = foldl (flip (*)) (1 * 1) [2,3]
+ = foldl (flip (*)) (2 * (1 * 1)) [3]
+ = foldl (flip (*)) (3 * (2 * (1 * 1))) []
+ = (3 * (2 * (1 * 1)))
+----
+. c) one difference between `*foldr*` and `*foldl*` is that `*foldr*`, but not `*foldl*`, associates to the right
+. a) folds are catamorphisms, they are used to reduce structure
+. fixed functions
+.. `foldr (++) "" ["woot", "WOOT", "woot"]`
+.. `foldr max "" ["fear","is","the","little","death"]`
+.. `foldr (&&) True [False, True]`
+.. `foldr (||) True [False, True]` always return `True`
+.. `foldl (\x y -> x ++ show y) "" [1..5]`
+.. `foldr (flip const) 'a' [1..5]`
+.. `foldr (flip const) 0 "tacos"`
+.. `foldl const 0 "burritos"`
+.. `foldl const 'z' [1..5]`
+
+=== 10.6 How to write fold functions
+==== Intermission: Exercises
+[source]
+----
+include::ch10_10.6_0.hs[]
+----
+
+=== 10.9 Scans
+
+The `fibs` using `scanl` is a little bit of a mind bender at the beginning. I wrote out the evaluation https://gist.github.com/lukleh/67cf0a78205d3f6bd2d9
+
+[source]
+----
+include::ch10_10.9_0.hs[]
+----
+
+=== 10.10 Chapter Exercises
+==== Warm-up and review
+. tuples
++
+[source]
+----
+include::ch10_10.10_0.hs[]
+----
+. following function return average size (round to integer) of word in a sentece (string)
++
+[source]
+----
+include::ch10_10.10_1.hs[]
+----
+. returing `*Fractional*` values
++
+[source]
+----
+include::ch10_10.10_2.hs[]
+----
+
+==== Rewriting functions using folds
+. myOr
++
+[source]
+----
+myOr :: [Bool] -> Bool
+myOr = foldr (||) False
+----
+. myAny
++
+[source]
+----
+include::ch10_10.10_3.hs[]
+----
+. myElem
++
+[source]
+----
+include::ch10_10.10_4.hs[]
+----
+. myReverse
++
+[source]
+----
+include::ch10_10.10_5.hs[]
+----
+. myMap
++
+[source]
+----
+include::ch10_10.10_6.hs[]
+----
+. myFilter
++
+[source]
+----
+include::ch10_10.10_7.hs[]
+----
+. squish
++
+[source]
+----
+include::ch10_10.10_8.hs[]
+----
+. squishMap
++
+[source]
+----
+include::ch10_10.10_9.hs[]
+----
+. squishAgain using squishMap
++
+[source]
+----
+include::ch10_10.10_10.hs[]
+----
+. myMaximumBy
++
+[source]
+----
+include::ch10_10.10_11.hs[]
+----
+. myMinimumBy
++
+[source]
+----
+include::ch10_10.10_12.hs[]
+----

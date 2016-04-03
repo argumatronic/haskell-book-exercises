@@ -1,0 +1,74 @@
+== 8 Recursion
+=== 8.2 Factorial
+==== Intermission: Exercise
+[source]
+----
+include::ch08_8.2_0.hs[]
+----
+
+=== 8.6 Chapter Exercises
+==== Review of types
+. d) `*\[[Bool]]*` is type of `*\[[True, False], [True, True], [False, True]]*`
+. b) `*[[3 == 3], [6 > 5], [3 < 4]]*` is the same type as `*\[[True, False], [True, True], [False, True]]*`
+. d) all of the above 
++
+[source]
+----
+func :: [a] -> [a] -> [a]
+func x y = x ++ y
+----
+. b) `*func "Hello" "World"*`
+
+==== Reviewing currying
+[source]
+----
+include::ch08_8.6_0.hs[]
+----
+. value of `*appedCatty "woohoo!"*` is `*"woops mrow woohoo!"*`
+. value of `*frappe "1"*` is `*"1 mrow haha"*`
+. value of `*frappe (appedCatty "2")*` is `*woops mrow 2 mrow haha"*`
+. value of `*appedCatty (frappe "blue")* is `*"woops mrow blue mrow haha"*`
+. value of `*cattyConny (frappe "pink") (cattyConny "green" (appedCatty "blue"))*` is `*"pink mrow haha mrow green mrow woops mrow blue"*`
+. value of `*cattyConny (flippy "Pugs" "are") "awesome"*` is `*"are mrow Pugs mrow awesome"*`
+
+==== Recursion
+. step of `*dividedBy 15 2*`
++
+[source]
+----
+include::ch08_8.6_1.hs[]
+----
++
+[source]
+----
+include::ch08_8.6_2.hs[]
+----
+. recursive sum function
++
+[source]
+----
+include::ch08_8.6_3.hs[]
+----
+. recursive multiplication
++
+[source]
+----
+include::ch08_8.6_4.hs[]
+----
+
+==== Fixing dividedBy
+Type of divideBy changed to match DividedResult.
+[source]
+----
+include::ch08_8.6_5_1.hs[]
+----
+==== McCarthy 91 function
+[source]
+----
+include::ch08_8.6_6.hs[]
+----
+==== Numbers into words
+[source]
+----
+include::ch08_8.6_7.hs[]
+----

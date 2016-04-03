@@ -1,0 +1,40 @@
+= Exercises and notes for book "Haskell Programming from first principles" - Unofficial
+:source-highlighter: prettify
+:source-language: haskell
+:icons: font
+:toc:
+
+This is *UNOFFICIAL*. In this document you will find finished exercises (hopefully without bugs) and notes for the book *Haskell Programming from first principles* from *Chris Allen* and *Julie Monoruki*. More details about the book and a place where to purchase it - http://haskellbook.com/
+
+IMPORTANT: These are my personal notes and solved exercises for the book. I did this for myself and thought it may as well help others. I claim nothing. As I progress in book, I try to update this document.
+
+NOTE: This document is written in asciidoc, use Asciidoctor to build `asciidoctor index.adoc`
+
+
+include::ch01/ch01.adoc[]
+
+include::ch02/ch02.adoc[]
+
+include::ch03/ch03.adoc[]
+
+include::ch04/ch04.adoc[]
+
+include::ch05/ch05.adoc[]
+
+include::ch06/ch06.adoc[]
+
+include::ch07/ch07.adoc[]
+
+include::ch08/ch08.adoc[]
+
+include::ch09/ch09.adoc[]
+
+include::ch10/ch10.adoc[]
+
+include::ch11/ch11.adoc[]
+
+include::ch12/ch12.adoc[]
+
+include::ch13/ch13.adoc[]
+
+include::ch14/ch14.adoc[]

@@ -1,0 +1,347 @@
+== 9 Lists
+=== 9.5 Using ranges to construct lists
+==== Exercise
+The trick here was to use `fromEnum` and `toEnum` to get `Int` and avoid using `Ord` constrain in the signature. Got this insight from reading the `Enum` class source code - http://hackage.haskell.org/package/base-4.8.2.0/docs/src/GHC.Enum.html#Enum
+[source]
+----
+include::ch09_9.5_0.hs[]
+----
+Writing my own `enumFromTo` for the following types is kind a of arbitrary since I did `myEnumFromTo`.
+[source]
+----
+include::ch09_9.5_1.hs[]
+----
+
+=== 9.6 Extracting portions of lists
+==== Intermission: Exercises
+
+. make `*words*` function using `*dropWhile*` and `*takeWhile*`
+.. first attempt
++
+[source]
+----
+include::ch09_9.6_0_1.hs[]
+----
+.. no need for lambdas
++
+[source]
+----
+include::ch09_9.6_0_2.hs[]
+----
+.. we can turn it into `case`
++
+[source]
+----
+include::ch09_9.6_0_3.hs[]
+----
+.. simplyfy more
++
+[source]
+----
+include::ch09_9.6_0_4.hs[]
+----
+.. this one is very close to the version in `Prelude`, using `break`
++
+[source]
+----
+include::ch09_9.6_0_5.hs[]
+----
+.. and version from the book in the 9.14 Answers chapter. Pretty neat, did not think about matching the space as a pattern.
++
+[source]
+----
+include::ch09_9.6_0_6.hs[]
+----
+. break `*String*` on newlines
++
+[source]
+----
+include::ch09_9.6_1.hs[]
+----
+. parametrized `myWords` and `myLines`
++
+[source]
+----
+include::ch09_9.6_2.hs[]
+----
+
+=== 9.7 List comprehensions
+==== Adding predicates
+
+[source]
+----
+mySqr = [x^2 | x <- [1..10]]
+-- result
+[1,4,9,16,25,36,49,64,81,100]
+
+[x | x <- mySqr, rem x 2 == 0]
+-- result
+[4,16,36,64,100]
+
+[(x, y) | x <- mySqr, y <- mySqr, x < 50, y > 50]
+-- result
+[(1,64),(1,81),(1,100),(4,64),(4,81),(4,100),(9,64),(9,81),(9,100),(16,64),(16,81),(16,100),(25,64),(25,81),(25,100),(36,64),(36,81),(36,100),(49,64),(49,81),(49,100)]
+
+take 5 [(x, y) | x <- mySqr, y <- mySqr, x < 50, y > 50]
+-- result
+[(1,64),(1,81),(1,100),(4,64),(4,81)]
+----
+
+==== List comprehensions with Strings
+
+[source]
+----
+Prelude> let mySqr = [x^2 | x <- [1..5]]
+Prelude> let myCube = [y^3 | y <- [1..5]]
+----
+
+. tuples of `*mySqr*` and `*myCube*`
++
+[source]
+----
+[(x, y) | x <- mySqr, y <- myCube]
+-- [(1,1),(1,8),(1,27),(1,64),(1,125),(4,1),(4,8),(4,27),(4,64),(4,125),(9,1),(9,8),(9,27),(9,64),(9,125),(16,1),(16,8),(16,27),(16,64),(16,125),(25,1),(25,8),(25,27),(25,64),(25,125)]
+----
+. `*x*` and `*y*` from previous point that are less than 50
++
+[source]
+----
+[(x, y) | x <- mySqr, y <- myCube, x < 50, y < 50]
+-- [(1,1),(1,8),(1,27),(4,1),(4,8),(4,27),(9,1),(9,8),(9,27),(16,1),(16,8),(16,27),(25,1),(25,8),(25,27)]
+----
+. number of tuples from previuos point
++
+[source]
+----
+length [(x, y) | x <- mySqr, y <- myCube, x < 50, y < 50]
+-- 15
+----
+
+=== 9.8 Spines and non-strict evaluation
+==== Intermission: Exercises
+==== Will it blow up?
+
+. yes, it gets evaluated to `*undefined*` because of `x^y`
++
+[source]
+----
+[x^y | x <- [1..5], y <- [2, undefined]]
+----
+. no, only first element of list get evaluated
++
+[source]
+----
+take 1 $ [x^y | x <- [1..5], y <- [2, undefined]]
+----
+. yes, sum breaks on `*undefined*`
++
+[source]
+----
+sum [1, undefined, 3]
+----
+. no, `*length*` ignores values
++
+[source]
+----
+length [1, 2, undefined]
+----
+. yes, `*undefined*` is part of spine
++
+[source]
+----
+length $ [1, 2, 3] ++ undefined
+----
+. no, evaluates to second list element
++
+[source]
+----
+take 1 $ filter even [1, 2, 3, undefined]
+----
+. yes, `*take 1*` forces `*filter*` to evaluate until `*undefined*`
++
+[source]
+----
+take 1 $ filter even [1, 3, undefined]
+----
+. no, only first element evaluated
++
+[source]
+----
+take 1 $ filter odd [1, 3, undefined]
+----
+. no, only first two elemnts evaluated
++
+[source]
+----
+take 2 $ filter odd [1, 3, undefined]
+----
+. yes, trird element is `*undefined*`
++
+[source]
+----
+take 3 $ filter odd [1, 3, undefined]
+----
+
+==== Is it in normal form?
+WARNING: not sure
+
+. `WHHNF` and `NF`, all evaluated `*[1, 2, 3, 4, 5]*`
+. `WHNF` because of `*_*` in `*1 : 2 : 3 : 4 : _*`
+. `neither`, not data constructor `*enumFromTo 1 10*`
+. `neither`, not data constructor `*length [1, 2, 3, 4, 5]*`
+. `neither`, not data constructor `*sum (enumFromTo 1 10)*`
+. `neither`, not data constructor `*['a'..'m'] ++ ['n'..'z']*`
+. `WHFN`, not all evaluated `*(_, 'b')*`
+
+=== 9.9 Transforming lists of values
+
+. will return bottom, `take 1` evaluates `undefined`
++
+[source]
+----
+take 1 $ map (+1) [undefined, 2, 3]
+----
+. returns `2`
++
+[source]
+----
+take 1 $ map (+1) [1, undefined, 3]
+----
+. bottom, second element is `undefined` and is evaluated by `take 2`
++
+[source]
+----
+take 2 $ map (+1) [1, undefined, 3]
+----
+. function transforms `String` into a list of `Bool` depending if character is vovel, type in code
++
+[source]
+----
+itIsMystery :: String -> [Bool]
+itIsMystery xs = map (\x -> elem x "aeiou") xs
+----
+. results
+.. `*map (^2) [1..10]*` evaluates to `[1,4,9,16,25,36,49,64,81,100]`
+.. `*map minimum [[1..10], [10..20], [20..30]]*` evaluates to `[1,10,20]`
+.. `*map sum [[1..5], [1..5], [1..5]]*` evaluates to `[15,15,15]`
+. rewrite
++
+[source]
+----
+include::ch09_9.9_0.hs[]
+----
+
+=== 9.10 Filtering lists of values
+
+. `*filter (\x -> (rem x 3) == 0) [1..30]*`
+. `*(length . filter (\ x -> (rem x 3) == 0)) [1 .. 30]`*
+. `*myFilter = filter (\x -> not (elem x ["the", "a", "an"])) . words*`
+
+=== 9.11 Zipping lists
+
+. `zip` implementation, using a little trick that any empty list falls through to the all-catch pattern. Could be written on more lines explicitly matching the empty lists. 
++
+[source]
+----
+include::ch09_9.11_0.hs[]
+----
+. `zipWith` implementation
++
+[source]
+----
+include::ch09_9.11_1.hs[]
+----
+
+=== 9.12 Chapter Exercises
+==== Data.Char
+
+. `*isUpper :: Char -> Bool*`, `*toUpper :: Char -> Char*`
+. `*let fUp = filter (\x -> isUpper x)*`
+. capitalize first letter
++
+[source]
+----
+include::ch09_9.12_0.hs[]
+----
+. capitalize all letters
++
+[source]
+----
+include::ch09_9.12_1.hs[]
+----
+. capitalize and return first letter using `*head*`
++
+[source]
+----
+include::ch09_9.12_2.hs[]
+----
+. previous function as composed and then pointfree
++
+[source]
+----
+include::ch09_9.12_3.hs[]
+----
+
+==== Ciphers
+ 
+[source]
+----
+include::ch09_9.12_cipher.hs[]
+----
+
+==== Writing your own standard functions
+
+. `*myOr*`
++
+[source]
+----
+include::ch09_9.12_4.hs[]
+----
+. `*myAny*`
++
+[source]
+----
+include::ch09_9.12_5.hs[]
+----
+. `*myElem*`
++
+[source]
+----
+include::ch09_9.12_6.hs[]
+----
+. `*myReverse*`
++
+[source]
+----
+include::ch09_9.12_7.hs[]
+----
+. `*squish*`
++
+[source]
+----
+include::ch09_9.12_8.hs[]
+----
+. `*squishMap*`
++
+[source]
+----
+include::ch09_9.12_9.hs[]
+----
+. `*squishAgain*`
++
+[source]
+----
+include::ch09_9.12_10.hs[]
+----
+. `*myMaximumBy*`
++
+[source]
+----
+include::ch09_9.12_11.hs[]
+----
+. `*myMinimumBy*`, `*myMaximum*`, `*myMinimum*`
++
+[source]
+----
+include::ch09_9.12_12.hs[]
+----

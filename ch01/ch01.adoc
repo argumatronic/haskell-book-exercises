@@ -1,0 +1,35 @@
+== 1 All you need is lambda
+=== 1.6 Multiple arguments
+==== Intermission: Exercises
+. b) `λxy.xz` equals `λmn.mz`
+. c) `λxy.xxy` equals `λa(λb).aab` although it should be `λa(λb.aab)` I think
+. b) `λxyz.zx` equals `λtos.st`
+=== 1.11 Exercises
+==== Combinators
+Combinator is lambda term with no free variable
+
+`λxyz.xz(yz) -> λyz.yz(z) -> λz.zz`
+
+. `λx.xxx` - yes
+. `λxy.zx` - no, `z` not in head
+. `λxyz.xy(zx)` - yes
+. `λxyz.xy(zxy)` - yes
+. `λxy.xy(zxy)` - no, `z` not in head
+
+==== Normal form or diverge
+Diverge - reduction does not end
+
+. `λx.xxx` - converge, no reduction
+. `(λz.zzz)(λy.yy)` - diverge, `(λz.zzz)(λy.yy) -> (λy.yy)(λy.yy)(λy.yy) -> ((λy.yy)(λy.yy))(λy.yy)` into more nested expressions
+. `(λx.xxx)z` - converge, `(λx.xxx)z -> zzz`
+
+==== Beta reduce
+Reduce in normal order, that is leftmost outermost first. Otherwise you get different results.
+
+. `(λabc.cba)zz(λwv.w) -> (λc.czz)(λwv.w) -> (λwv.w)zz -> z`
+. `(λx.λy.xyy)(λa.a)b -> (λy.(λa.a)yy)b -> (λa.a)bb -> bb`
+. `(λy.y)(λx.xx)(λz.zq) -> (λx.xx)(λz.zq) -> (λz.zq)(λz.zq) -> (λz.zq)q -> qq`
+. `(λz.z)(λz.zz)(λz.zy) -> (λz.zz)(λz.zy) -> (λz.zy)(λz.zy) -> (λz.zy)y -> yy`
+. `(λx.λy.xyy)(λy.y)y -> (λy.(λy.y)yy)y -> (λy.y)yy -> yy`
+. `(λa.aa)(λb.ba)c -> (λb.ba)(λb.ba)c -> ((λb.ba)a)c -> aac`
+. `(λxyz.xz(yz))(λx.z)(λx.a) -> (λyz1.(λx.z)z1(yz1))(λx.a) -> (λz1.(λx.z)z1((λx.a)z1)) -> (λz1.z((λx.a)z1)) -> λz1.za`

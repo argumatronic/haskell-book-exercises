@@ -1,0 +1,267 @@
+== 5 Types
+=== 5.4 Typeclass-constrained type variables
+==== Intermission: Exercises
+pair functions and signatures
+
+. a) c) 
++
+[source]
+----
+not :: Bool -> Bool
+----
+. b) d)
++
+[source]
+----
+length :: [a] -> Int
+----
+. c) b)
++
+[source]
+----
+concat :: [[a]] -> [a]
+----
+. d) a)
++
+[source]
+----
+head :: [a] -> a
+----
+. e) e)
++
+[source]
+----
+(<) :: Ord a => a -> a -> Bool
+----
+
+=== 5.5 Currying
+
+test like this
+[source]
+----
+Prelude> let f :: a -> a -> a -> a; f = undefined
+Prelude> :t f undefined
+f undefined :: a -> a -> a
+Prelude> :t f 1
+f 1 :: Num a => a -> a -> a
+Prelude> :t f (1 :: Int)
+f (1 :: Int) :: Int -> Int -> Int
+----
+==== Intermission: Exercises
+. a)
++
+[source]
+----
+f :: a -> a -> a -> a
+f 'a' :: Char -> Char -> Char
+----
+. d)
++
+[source]
+----
+g :: a -> b -> c -> b
+g 0 'c' "woot" :: Char
+----
+. d)
++
+[source]
+----
+h :: (Num a, Num b) => a -> b -> b
+h 1.0 2 :: Num b => b
+----
+. c)
++
+[source]
+----
+h :: (Num a, Num b) => a -> b -> b
+h 1 (5.5 :: Double) :: Double
+----
+. a)
++
+[source]
+----
+jackal :: (Ord a, Eq b) => a -> b -> a
+jackal "keyboard" "has the word jackal in it" :: [Char]
+----
+. e)
++
+[source]
+----
+jackal :: (Ord a, Eq b) => a -> b -> a
+jackal "keyboard" "has the word jackal in it" :: Eq b => b -> [Char]
+----
+. d)
++
+[source]
+----
+kessel :: (Ord a, Num b) => a -> b -> a
+kessel 1 2 :: (Num a, Ord a) => a
+----
+. a)
++
+[source]
+----
+kessel :: (Ord a, Num b) => a -> b -> a
+kessel 1 (2 :: Integer) :: (Num a, Ord a) => a
+----
+. c)
++
+[source]
+----
+kessel :: (Ord a, Num b) => a -> b -> a
+kessel (1 :: Integer) 2 :: Integer
+----
+
+=== 5.6 Polymorphism
+==== Intermission: Exercises
+. id
++
+[source]
+----
+f :: a -> a
+f a = a
+----
+. return first or second argument
++
+[source]
+----
+f :: a -> a -> a
+f a b = a
+f a b = b
+----
+. only one implementation, like id
++
+[source]
+----
+f :: a -> b -> b
+f a b = b
+----
+
+=== 5.7 Type inference
+==== Intermission: Exercises
+. `[Char] -> [Char]`
++
+[source]
+----
+(++) :: [a] -> [a] -> [a]
+myConcat x = x ++ " yo"
+----
+. `Fractional a => a -> a`
++
+[source]
+----
+(*) :: Num a => a -> a -> a
+myMult x = (x / 3) * 5
+----
+. `Int -> [Char]`
++
+[source]
+----
+take :: Int -> [a] -> [a]
+myTake x = take x "hey you"
+----
+. `Int -> Bool`
++
+[source]
+----
+(>) :: Ord a => a -> a -> Bool
+myCom x = x > (length [1..10])
+----
+. `Char -> Bool`
++
+[source]
+----
+(<) :: Ord a => a -> a -> Bool
+myAlph x = x < 'z'
+----
+
+=== 5.9 Chapter Exercises
+==== Multiple choice
+. c) value of type `*[a]*` is a list whose elements are all of some type `*a*`
+. a) function of type `*\[[a]] -> [a]*` could take a list of strings as an argument
+. b) function of type `*[a] -> Int -> a*` returns one element of type `a` from a list
+. c) function of type `*(a, b) -> a*` takes a tuple argument and returns the first value
+
+==== Determine the type
+. return value and type
+.. `54 :: Num a => a`
+.. `(0, "doge) :: Num t => (t, [Char])`
+.. `(0, "doge) :: (Integer, [Char])`
+.. `False :: Bool`
+.. `5 :: Int`
+.. `False :: Bool`
+. type is `Num a => a`
+. `y` is shadowed, type is `Num a => a -> a`
+. type is `Fractional => a :: a`
+. type is `[Char]`
+
+==== Does it compile?
+. `wahoo = bigNum $ 10` breaks, because `bigNum` is a value, not a function
+. works fine in GHCI, should work too in file
+. breaks on `c = b 10`, `b` has value `5`, cannot apply value to a value
+. breaks on `b = 10000 * c`, `c` is not defined
+
+==== Type variable or specific type constructor?
+. `f :: zed -> Zed -> Blah` is fully polymorphic, concrete and concrete
+. `f :: Enum b => a -> b -> C` is fully polymorphic, constrained polymorphic and concrete
+. `f :: f -> g -> C` is fully polymorphic, fully polymorphic and concrete
+
+==== Write a type signature
+. `functionH (x:_) = x` type signature `functionH :: [a] -> a`
+. `functionC x y = if (x > y) then True else False` type signature `functionC :: Ord a => a -> a -> Bool`
+. `functionS (x, y) = y` type signature `functionS :: (a, b) -> b`
+
+==== Given a type, write the function
+. `i :: a -> a; i a = a` or `id`
+. `c :: a -> b -> a; c a _ = a`
+. `c'' :: b -> a -> b; c :: a -> b -> a` they are the same
+. `c' :: a -> b -> b; c _ b = b`
+. `r :: [a] -> [a]` possibly `r a = tail a` or `r a = reverse a`
+. `co :: (b -> c) -> (a -> b) -> (a -> c); co = (.)`
+. `a :: (a -> c) -> a -> a; a f x = x` basically ignore the first argument
+. `a' :: (a -> b) -> a -> b; a' = ($)`
+
+==== Fix it
+[source]
+----
+include::ch05_5.9_0.hs[]
+----
+[source]
+----
+include::ch05_5.9_1.hs[]
+----
+[source]
+----
+include::ch05_5.9_2.hs[]
+----
+
+==== Type-Kwon-Do
+full example for this section, it is al only about type checking
+[source]
+----
+include::ch05_5.9_3.hs[]
+----
+. just a composition
++
+[source]
+----
+include::ch05_5.9_4.hs[]
+----
+. also a composition
++
+[source]
+----
+include::ch05_5.9_5.hs[]
+----
+. once u got the point, it is kinda easy
++
+[source]
+----
+include::ch05_5.9_6.hs[]
+----
+. neat
++
+[source]
+----
+include::ch05_5.9_7.hs[]
+----

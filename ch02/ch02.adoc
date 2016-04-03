@@ -1,0 +1,209 @@
+== 2 Hello, Haskell!
+=== 2.4 Functions
+==== Intermission: Exercises
+
+[source]
+----
+let half x = x / 2
+
+let square x = x * x
+----
+
+[source]
+----
+dpi x = 3.14 * (x * x)
+----
+
+=== 2.5 Infix
+==== Associativity and precedence
+Higher precedence is applied first. Scale is 0-9.
+[source]
+----
+Prelude> :info (^)
+(^) :: (Num a, Integral b) => a -> b -> a   -- Defined in ‘GHC.Real’
+infixr 8 ^
+----
+
+Left associative
+[source]
+----
+2 * 3 * 4
+-- is evaluated as if it was
+(2 * 3) * 4
+----
+
+Right associative
+[source]
+----
+Prelude> 2 ^ 3 ^ 4
+2417851639229258349412352
+Prelude> 2 ^ (3 ^ 4)
+2417851639229258349412352
+Prelude> (2 ^ 3) ^ 4
+4096
+----
+
+==== Intermission: Exercises
+
+they differ
+[source]
+----
+8 + 7 * 9 = 71
+(8 + 7) * 9 = 135
+----
+
+they are the same
+[source]
+----
+perimeter x y = (x * 2) + (y * 2)
+perimeter x y = x * 2 + y * 2
+----
+
+they differ
+[source]
+----
+f x = x / 2 + 9
+f x = x / (2 + 9)
+----
+
+=== 2.6 Declaring values
+
+fix mistakes
+[source]
+----
+let area x = 3. 14 * (x * x)
+let area x = 3.14 * (x * x)
+----
+
+[source]
+----
+let double x = b * 2
+let double x = x * 2
+----
+
+[source]
+----
+include::ch02_2.6_1.hs[]
+
+Prelude> :l ch02_2.6_1.hs
+[1 of 1] Compiling Main             ( ch02_2.6_1.hs, interpreted )
+
+ch02_2.6_1.hs:2:4: parse error on input ‘=’
+Failed, modules loaded: none.
+
+-- fixed
+x = 7
+y = 10
+f = x + y
+----
+
+=== 2.12 Let and where
+
+==== Intermission: Exercises
+[source]
+----
+let x = 5 in x
+-- 5
+let x = 5 in x * x
+-- 25
+let x = 5; y = 6 in x * y
+-- 30
+let x = 3; y = 1000 in x + 3
+-- 6
+----
+
+`*let*` rewritten to `*where*`
+[source]
+----
+f1 = x
+    where x = 5
+
+f2 = x * x
+    where x = 5
+    
+f3 = x * y
+    where x = 5
+          y = 6
+
+f4 = x + 3
+   where x = 3
+         y = 1000
+----
+
+==== More exercises!
+`*let*` rewritten to `*where*`
+[source]
+----
+include::ch02_2.12_1.hs[]
+----
+
+=== 2.13 Chapter Exercises
+==== Parenthesization
+
+. `2 + 2 * 3 - 1` == `2 + (2 * 3) - 1`
+. `(^) 10 $ 1 + 1` == `(^) 10 (1 + 1)`
+. `2 ^ 2 * 4 ^ 5 + 1` == `( (2 ^ 2) * (4 ^ 5) ) + 1`
+
+==== Equivalent expressions
+
+. `1 + 1 == 2`
+. `10 ^ 2 == 10 + 9 * 10`
+. `400 - 37 /= (-) 37 400`
+. `100 pass:[`div`] 3 /= 100 / 3`
+. `2 * 5 + 18 /= 2 * (5 + 18)`
+
+==== More fun with functions
+
+[source]
+----
+z = 7
+x = y ^ 2
+waxOn = x * 5
+y = z + 8
+----
+to REPL
+[source]
+----
+let z = 7
+let y = z + 8
+let x = y ^ 2
+let waxOn = x * 5
+----
+`waxOn == 1125`
+
+. results of
++
+[source]
+----
+10 + waxOn
+-- 1135
+(+10) waxOn
+-- 1135
+(-) 15 waxOn
+-- -1110
+(-) waxOn 15
+-- 1110
+----
+. `*triple*`
++
+[source]
+----
+let triple x = x * 3
+triple waxOn
+-- 3375
+----
+. where waxOn
++
+[source]
+----
+include::ch02_2.12_2.hs[]
+----
+. rest
++
+[source]
+----
+include::ch02_2.12_3.hs[]
+----
++
+`*waxOff*` is `*triple*` +
+`*waxOff waxOn*` is `*triple waxOn*`

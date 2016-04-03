@@ -1,0 +1,267 @@
+== 6 Typeclasses
+=== 6.7 Ord
+==== Intermission: Exercises
+. will work, result `*5*` 
++
+[source]
+----
+max (length [1, 2, 3]) (length [8, 9, 10, 11, 12])
+----
+. will work, result `*LT*`
++
+[source]
+----
+compare (3 * 4) (3 * 5)
+----
+. will not work, parameters are different type
++
+[source]
+----
+compare "Julie" True
+----
+. will work, result `*False*`
++
+[source]
+----
+(5 + 3) > (3 + 6)
+----
+
+=== 6.12 Writing instances for your typeclasses
+==== Intermission: Exercises
+Write the `*Eq*` instance for the datatype provided
+
+. TisAnInteger
++
+[source]
+----
+include::ch06_6.12_0.hs[]
+----
+. TwoIntegers
++
+[source]
+----
+include::ch06_6.12_0_1.hs[]
+----
+. StringOrInt
++
+[source]
+----
+include::ch06_6.12_0_2.hs[]
+----
+. Pair a
++
+[source]
+----
+include::ch06_6.12_0_3.hs[]
+----
+. Tuple a b
++
+[source]
+----
+include::ch06_6.12_0_4.hs[]
+----
+. Which a
++
+[source]
+----
+include::ch06_6.12_0_5.hs[]
+----
+. EitherOr a b
++
+[source]
+----
+include::ch06_6.12_0_6.hs[]
+----
+
+=== 6.14 Chapter Exercises
+==== Multiple choice
+. c) The `*Eq*` class makes equality tests possible
+. a) allows any two values to be compared   
+. a) Type of `*>*` is `*Ord a => a -> a -> Bool*`
+. c) the type of x is a tuple in `*x = divMod 16 12*`
+. a) The typeclass `*Integral*` includes `*Int*` and `*Integer*` numbers - and `Word`
+
+==== Does it typecheck?
+. data `*Person*` need to to be instance of `*Show*`
++
+[source]
+----
+include::ch06_6.12_1.hs[]
+----
+. data `*Mood*` need to to be instance of `*Eq*`
++
+[source]
+----
+include::ch06_6.12_2.hs[]
+----
+. `*settleDown*`
+.. inputs can be `*Woot*` or `*Blah*`
+.. type error `No instance for (Num Mood) arising from the literal ‘9’` - different types and `Mood` is not in `Num`
+.. `*Blah > Woot*` raises error, because `*Mood*` is not instance of `*Ord*`
+. following code type checks
++
+[source]
+----
+include::ch06_6.12_3.hs[]
+----
+
+==== Given a datatype declaration, what can we do?
+[source]
+----
+include::ch06_6.12_4.hs[]
+----
+. Does not typecheck, `*Papu*` parameters are not well constructed.
++
+[source]
+----
+phew = Papu "chases" True
+-- fix
+phew = Papu (Rocks "chases") (Yeah True)
+----
+. Does typecheck.
++
+[source]
+----
+truth = Papu (Rocks "chomskydoz")
+             (Yeah True)
+----
+. Does typecheck.
++
+[source]
+----
+equalityForall :: Papu -> Papu -> Bool
+equalityForall p p' = p == p'
+----
+. Does not typecheck, `*Papu*` is not an instance of `*Ord*`.
++
+[source]
+----
+comparePapus :: Papu -> Papu -> Bool
+comparePapus p p' = p > p'
+----
+
+==== Match the types
+can you substitute signature
+
+. Value `1` cannot be an needs at least `*Num*`
++
+[source]
+----
+i :: Num a => a
+i = 1
+
+i :: a
+-- No instance for (Num a) arising from the literal ‘1’
+----
+. Value `1.0` cannot be an instance on `*Num*`, it does not work with all the sub classes of `*Num*`. For example `1.0` cannot be `*Int*`.
++
+[source]
+----
+f :: Float
+f = 1.0
+
+f :: Num a => a
+-- error: Could not deduce (Fractional a) arising from the literal ‘1.0’ from the context (Num a)
+----
+. Value `1.0` works for class `Fractional` and all it's subclasses and instances, which is also `Float`
++
+[source]
+----
+f :: Float
+f = 1.0
+
+f :: Fractional a => a
+----
+. Value `1.0` works for class `RealFrac` and all it's subclasses and instances.
++
+[source]
+----
+f :: Float
+f = 1.0
+
+f :: RealFrac a => a
+----
+. identity function works for all values/instances of all classes
++
+[source]
+----
+freud :: a -> a
+freud x = x
+
+freud :: Ord a => a -> a
+----
+. identity function works for type `*Int*`
++
+[source]
+----
+freud' :: a -> a
+freud' x = x
+
+freud' :: Int -> Int
+----
+. `*myX*` is type `*Int*`, `*sigmund*` is then defined without type constraines, but the real type is `*a -> Int*` so `a -> a` breaks
++
+[source]
+----
+myX = 1 :: Int
+
+sigmund :: Int -> Int
+sigmund x = myX
+
+sigmund :: a -> a
+----
+. `*myX*` is type `*Int*`, `*sigmund'*` is then defined with `*Num*` type constrain, but the real type is `*a -> Int*` so `Num a => a -> a` breaks
++
+[source]
+----
+myX = 1 :: Int
+
+sigmund' :: Int -> Int
+sigmund' x = myX
+
+sigmund' :: Num a => a -> a
+----
+. works, `*Int*` is instance of `*Ord*` and signature of `*jung*` matches that of `*sort*`
++
+[source]
+----
+jung :: Ord a => [a] -> a
+jung xs = head (sort xs)
+
+jung :: [Int] -> Int
+----
+. works, signature of `*young*` is the same as signature of `*sort*`
++
+[source]
+----
+young :: [Char] -> Char
+young xs = head (sort xs)
+
+young :: Ord a => [a] -> a
+----
+. breaks, `*signifier*` is more constrained - by `*mySort*`
++
+[source]
+----
+mySort :: [Char] -> [Char]
+mySort = sort
+
+signifier :: [Char] -> Char
+signifier xs = head (mySort xs)
+
+signifier :: Ord a => [a] -> a
+----
+
+==== Type-Kwon-Do
+. we need function that does at the end `Eq a => a -> a -> Bool`, there are multiple implementation, choosing the most basic one `(==)`. we can also just ignore all the params and always return `Bool` like `True`
++
+[source]
+----
+include::ch06_6.14_0.hs[]
+----
+. the trick here is to use `fromInteger` to get `Num a`. wondering how can you make more generic type from more concrete type....
++
+[source]
+----
+include::ch06_6.14_1.hs[]
+----

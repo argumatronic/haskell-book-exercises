@@ -1,0 +1,197 @@
+== 7 More functional patterns
+=== 7.4 Anonymous functions
+
+. all are equal 
++
+[source]
+----
+mTh x y z = x * y * z
+mTh x y = \z -> x * y * z
+mTh x = \y -> \z -> x * y * z
+mTh = \x -> \y -> \z -> x * y * z
+----
+. d) type of `*mTh 3*` is 
++
+[source]
+----
+Num a => a -> a -> a
+----
+. as anonymous function
++
+[source]
+----
+include::ch07_7.4_0.hs[]
+----
+. as anonymous function - two arguments
++
+[source]
+----
+\x y -> ((if x > y then y else x) + 5)
+----
+. as anonymous function - three arguments nested
++
+[source]
+----
+\f -> \x -> \y -> f y x
+----
+
+=== 7.5 Pattern matching
+
+. given following declarations
++
+[source]
+----
+k (x, y) = x
+k1 = k ((4-1), 10)
+k2 = k ("three", (1 + 2))
+k3 = k (3, True)
+----
+.. type of `*k*` is `*(a, b) -> a*`
+.. type of `*k2*` is `*String*` and is different from `*k1*` and `*k3*`
+.. `*k3*` and `*k1*` will return `*3*`
+. completed definitions
++
+[source]
+----
+f :: (a, b, c) -> (d, e, f) -> ((a, d), (c, f))
+f (a, b, c) (d, e, f) = ((a, d), (c, f))
+----
+
+=== 7.6 Case expressions
+==== Intermission: Exercises
+rewrite `*if-then-else*` expressions into case expressions
+[source]
+----
+include::ch07_7.6_0.hs[]
+----
+cover all cases (missing `EQ`)
+[source]
+----
+include::ch07_7.6_1.hs[]
+----
+
+=== 7.7 Higher-order functions
+==== Intermission: Exercises
+[source]
+----
+include::ch07_7.7_0.hs[]
+----
+. `dodgy 1 0 == 1`
+. `dodgy 1 1 == 11`
+. `dodgy 2 2 == 22`
+. `dodgy 1 2 == 21`
+. `dodgy 2 1 == 12`
+. `oneIsOne 1 == 11`
+. `oneIsOne 2 == 21`
+. `oneIsTwo 2 == 22`
+. `oneIsOne 3 == 31`
+. `oneIsTwo 3 == 23`
+
+=== 7.8 Guards
+==== Intermission: Exercises
+
+. `otherwise` does not change behaviour
++
+[source]
+----
+include::ch07_7.8_0.hs[]
+----
+. if `y >= 0.7` is first, that is where `y >= 0.9 = 'A'` was, then `y >= 0.9` never becomes `True` as it is always caught by `y >= 0.7`. Passing `90` returns `C`
++
+[source]
+----
+include::ch07_7.8_0_1.hs[]
+----
+. b) `*True*` when `*xs*` is a palidrome
++
+[source]
+----
+pal xs
+    | xs == reverse xs = True
+    | otherwise = False
+----
+. `*pal*` can take `*Eq a => [a]*` as an argument
+. `*pal :: Eq a => [a] -> Bool*`
+. function bellow returns c) (argument is a positive or negative number)
++
+[source]
+----
+include::ch07_7.8_1.hs[]
+----
+. `*numbers :: (Num a, Ord a) => a*`
+. `*numbers :: (Num a, Num a1, Ord a1) => a1 -> a*`
+
+=== 7.10 Pointfree style
+
+[source]
+----
+include::ch07_7.10_0.hs[]
+----
+
+=== 7.12 Chapter Exercises
+==== Multiple choice
+. d) polymorphic function may resolve to values of different types, depending on inputs
+. b) `*Char -> [String]*` for `*g . f*` where `*f :: Char -> String*` and `*g :: String
+-> [String]*`
+. d) `*(Ord a, Num a) => a -> Bool*` for `*f :: Ord a => a -> a -> Bool*` applied to one numeric argument
+. b) is a higher-order function - `*(a -> b) -> c*`
+. a) `*f True :: Bool*` where `*f*` is
++
+[source]
+----
+f :: a -> a
+f x = x
+----
+
+==== Let’s write code
+. this function
++
+[source]
+----
+include::ch07_7.12_0.hs[]
+----
+.. using `*divMod*`
++
+[source]
+----
+include::ch07_7.12_1.hs[]
+----
+.. type signature is the same
+.. hunderds
++
+[source]
+----
+include::ch07_7.12_2.hs[]
+----
+. function `*a -> a -> Bool -> a*`
+.. case expression
++
+[source]
+----
+include::ch07_7.12_3.hs[]
+----
+.. guards
++
+[source]
+----
+include::ch07_7.12_4.hs[]
+----
+. filled definition
++
+[source]
+----
+include::ch07_7.12_5.hs[]
+----
+. look in the next point
+. pointfree version, `*roundTrip :: (Read a, Show a) => a -> a*`
++
+[source]
+----
+include::ch07_7.12_6.hs[]
+----
+. manually force `*Int*`
++
+[source]
+----
+include::ch07_7.12_7.hs[]
+----

@@ -1,0 +1,40 @@
+== 14 Testing
+=== 14.3 Conventional testing
+
+GITHUB/ch14/addition
+
+. `stack build`
+. `stack test`
+
+[source]
+----
+include::addition/test/Spec.hs[]
+----
+
+=== 14.5 Morse code
+
+GITHUB/ch14/morsecode
+
+[source]
+----
+include::morsecode/test/Spec.hs[]
+----
+
+=== 14.6 Chapter Exercises
+==== Validating numbers into words
+GITHUB/ch14/wordnumber
+
+[source]
+----
+include::wordnumber/test/Spec.hs[]
+----
+
+==== Using QuickCheck
+CAUTION: excercises 8 onwards I have no idea
+
+GITHUB/ch14/usingquickcheck
+
+[source]
+----
+include::usingquickcheck/test/Spec.hs[]
+----

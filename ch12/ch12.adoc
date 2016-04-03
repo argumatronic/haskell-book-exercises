@@ -1,0 +1,142 @@
+== 12 Signaling adversity
+=== 12.5 Chapter Exercises
+==== Determine the kinds
+. `*id :: a -> a*` kind of `*a*` is `***`
+. `*r :: a -> f a*` kind of `*a*` is `***`, kind of `*f a*` is `*pass:[* -> *]*`
+
+==== String processing
+. Replace "the" with "a". 
++
+[source]
+----
+include::ch12_12.5_0.hs[]
+----
+. recursive count
++
+[source]
+----
+include::ch12_12.5_1.hs[]
+----
+. number of vowels in a word - changed the siganture to `Int` instead of `Integer`
++
+[source]
+----
+include::ch12_12.5_2.hs[]
+----
+
+==== Validate the word
+[source]
+----
+include::ch12_12.5_3.hs[]
+----
+
+==== It’s only Natural
+[source]
+----
+include::ch12_12.5_4.hs[]
+----
+
+==== Small library for Maybe
+. boolean check
++
+[source]
+----
+include::ch12_12.5_5.hs[]
+----
+. Maybe catamorphism
++
+[source]
+----
+include::ch12_12.5_6.hs[]
+----
+. fallback
++
+[source]
+----
+include::ch12_12.5_7.hs[]
+----
+. Converting between List and Maybe
++
+[source]
+----
+include::ch12_12.5_8.hs[]
+----
+. drop the Nothing values from our list
++
+[source]
+----
+include::ch12_12.5_9.hs[]
+----
+. flipMaybe
++
+[source]
+----
+include::ch12_12.5_10.hs[]
+----
+
+==== Small library for Either
+. use foldr
++
+[source]
+----
+include::ch12_12.5_11.hs[]
+----
+. use foldr well, same as last one (don't see the point much, just use a instead of b)
++
+[source]
+----
+include::ch12_12.5_12.hs[]
+----
+. partitionEithers
++
+[source]
+----
+include::ch12_12.5_13.hs[]
+----
+. eitherMaybe
++
+[source]
+----
+include::ch12_12.5_14.hs[]
+----
+. either'
++
+[source]
+----
+include::ch12_12.5_15.hs[]
+----
+. use either'
++
+WARNING: I don't see the point :(
++
+[source]
+----
+include::ch12_12.5_16.hs[]
+----
+
+==== Write your own iterate and unfoldr
+. myIterate using recursion
++
+[source]
+----
+include::ch12_12.5_17.hs[]
+----
+. myUnfoldr
++
+[source]
+----
+include::ch12_12.5_18.hs[]
+----
+. myIterate into betterIterate using myUnfoldr
++
+[source]
+----
+include::ch12_12.5_19.hs[]
+----
+
+==== Finally something other than a list!
+
+[source]
+----
+include::ch12_12.5_20.hs[]
+----
