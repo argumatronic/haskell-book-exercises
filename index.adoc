@@ -6,6 +6,8 @@
 
 This is *UNOFFICIAL*. In this document you will find finished exercises (hopefully without bugs) and notes for the book *Haskell Programming from first principles* from *Chris Allen* and *Julie Monoruki*. More details about the book and a place where to purchase it - http://haskellbook.com/
 
+Sources for this documents are at https://github.com/lukleh/haskell-book-excercises
+
 IMPORTANT: These are my personal notes and solved exercises for the book. I did this for myself and thought it may as well help others. I claim nothing. As I progress in book, I try to update this document.
 
 NOTE: This document is written in asciidoc, use Asciidoctor to build `asciidoctor index.adoc`
