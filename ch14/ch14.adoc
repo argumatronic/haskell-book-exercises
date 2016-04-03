@@ -1,7 +1,7 @@
 == 14 Testing
 === 14.3 Conventional testing
 
-https://github.com/lukleh/haskell-book-excercises/ch14/addition
+https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/addition
 
 . `stack build`
 . `stack test`
@@ -13,7 +13,7 @@ include::addition/test/Spec.hs[]
 
 === 14.5 Morse code
 
-https://github.com/lukleh/haskell-book-excercises/ch14/morsecode
+https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/morsecode
 
 [source]
 ----
@@ -22,7 +22,7 @@ include::morsecode/test/Spec.hs[]
 
 === 14.6 Chapter Exercises
 ==== Validating numbers into words
-https://github.com/lukleh/haskell-book-excercises/ch14/wordnumber
+https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/wordnumber
 
 [source]
 ----
@@ -32,7 +32,7 @@ include::wordnumber/test/Spec.hs[]
 ==== Using QuickCheck
 CAUTION: excercises 8 onwards I have no idea
 
-https://github.com/lukleh/haskell-book-excercises/ch14/usingquickcheck
+https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/usingquickcheck
 
 [source]
 ----
