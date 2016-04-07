@@ -30,11 +30,103 @@ include::wordnumber/test/Spec.hs[]
 ----
 
 ==== Using QuickCheck
-CAUTION: excercises 8 onwards I have no idea
+CAUTION: excercises 8 I have no idea
+
+. propHalf `pass:[+++] OK, passed 100 tests.`
+. propSort `pass:[+++] OK, passed 100 tests.`
+. plusAssociative `pass:[+++] OK, passed 100 tests.`
++
+plusCommutative `pass:[+++] OK, passed 100 tests.`
+. multiAssociative `pass:[+++] OK, passed 100 tests.`
++
+multiCommutative `pass:[+++] OK, passed 100 tests.`
+. propQuotRem `pass:[+++] OK, passed 100 tests.`
++
+propDivMod `pass:[+++] OK, passed 100 tests.`
+. powerAssociative 
++
+....
+*** Failed! Falsifiable (after 1 test):
+0
+0
+0
+....
++
+powerCommutative
++
+....
+*** Failed! Falsifiable (after 2 tests):                  
+1
+0
+....
+. propReverse `pass:[+++] OK, passed 100 tests.`
+. NOT DONE
+. inConcatProp 
++
+....
+*** Failed! Falsifiable (after 2 tests and 2 shrinks):    
+"a"
+"b"
+....
++
+concatProp `pass:[+++] OK, passed 100 tests.`
+. lenTakeProb 
++
+....
+*** Failed! Falsifiable (after 3 tests and 1 shrink):     
+2
+""
+....
+. idProp `pass:[+++] OK, passed 100 tests.`
+
 
 https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/usingquickcheck
 
 [source]
 ----
 include::usingquickcheck/test/Spec.hs[]
+----
+
+==== Failure
+Floating point precission cannot guarantee equality
+[source]
+----
+include::ch14_14.6_failure.hs[]
+----
+....
+*Main> main 
+*** Failed! Falsifiable (after 2 tests and 1037 shrinks):     
+2.225078033262077e-308
+....
+
+==== Idempotence
+
+[source]
+----
+include::ch14_14.6_indepotence.hs[]
+----
+....
++++ OK, passed 100 tests.
++++ OK, passed 100 tests.
+....
+
+==== Make a Gen random generator for the datatype
+
+[source]
+----
+include::ch14_14.6_1.hs[]
+----
+
+=== Hangman testing
+WARNING: not done
+[source]
+----
+include::ch14_14.6_hangman.hs[]
+----
+
+==== Validating ciphers
+WARNING: need to do proper generators
+[source]
+----
+include::ch14_14.6_2.hs[]
 ----

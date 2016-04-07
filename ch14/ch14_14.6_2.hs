@@ -1,5 +1,5 @@
 import Data.Char (ord, chr, isAlpha)
-import Test.QuickCheck (quickCheck)
+import Test.QuickCheck (quickCheck, verboseCheck, Gen)
 
 caesar :: String -> Int -> String
 caesar [] _ = []
@@ -37,6 +37,15 @@ unVigenere xs ys = unVigenere' xs (cycle (map ord ys)) where
       | otherwise = x : unVigenere' xs cyp
 
 
+-- capitalGen :: Gen Char
+-- capitalGen = elements [A..Z]
+
+-- propCaesar :: Property
+-- propCaesar =
+--   forAll capitalGen
+--   (\c -> (unCaesar (caesar text shift) shift) == text)
+
+
 propCaesar :: String -> Int -> Bool
 propCaesar text shift = (unCaesar (caesar text shift) shift) == text
 
@@ -45,5 +54,5 @@ propVigenere text code = (unVigenere (vigenere text code) code) == text
 
 main :: IO ()
 main = do
-  quickCheck propCaesar
-  quickCheck propVigenere
+  verboseCheck propCaesar
+  verboseCheck propVigenere

@@ -17,7 +17,8 @@ propHalf x = halfIdentity x == x
 -- 2.
 listOrdered :: (Ord a) => [a] -> Bool
 listOrdered xs = snd $ foldr go (Nothing, True) xs
-  where go y (Nothing, t) = (Just y, t)
+  where go _ status@(_, False) = status
+        go y (Nothing, t) = (Just y, t)
         go y (Just x, t) = (Just y, x >= y)
 
 propSort :: [Int] -> Bool
@@ -59,19 +60,28 @@ powerCommutative x y = x ^ y == y ^ x
 
 -- 7.
 propReverse :: [Int] -> Bool
-propReverse xs = (reverse . reverse) xs == id xs
+propReverse xs = (reverse . reverse) xs == xs
 
 -- 8.
-applyProp = (f $ a) == (f a)
+-- applyProp = (f $ a) == (f a)
 
-composeProp = f . g == \x -> f (g x)
+-- composeProp = f . g == \x -> f (g x)
 
--- foldr (:) == (++)
--- foldr (++) [] == concat
+-- 9.
+inConcatProp :: String -> String -> Bool
+inConcatProp xs ys = foldr (:) xs ys == (++) xs ys
 
--- f n xs = length (take n xs) == n
+concatProp :: [String] -> Bool
+concatProp xs = foldr (++) [] xs == concat xs
 
--- f x = (read (show x)) == x
+-- 10.
+lenTakeProb :: Int -> String -> Bool
+lenTakeProb n xs = length (take n xs) == n
+
+-- 11.
+idProp :: Int -> Bool
+idProp x = (read (show x)) == x
+
 
 main :: IO ()
 main = do
@@ -86,3 +96,7 @@ main = do
   quickCheck powerAssociative
   quickCheck powerCommutative
   quickCheck propReverse
+  quickCheck inConcatProp
+  quickCheck concatProp
+  quickCheck lenTakeProb
+  quickCheck idProp

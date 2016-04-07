@@ -1,4 +1,4 @@
-import Test.QuickCheck (sample, elements, Gen)
+import Test.QuickCheck (sample, elements, frequency, Gen)
 
 data Fool =
       Fulse
@@ -9,4 +9,5 @@ genFool :: Gen Fool
 genFool = elements [Fulse, Frue]
 
 genFoolMoreFulse :: Gen Fool
-genFoolMoreFulse = elements [Fulse, Fulse, Frue]
+genFoolMoreFulse = frequency [(2, return Fulse),
+                              (1, return Frue)]

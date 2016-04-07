@@ -1,0 +1,30 @@
+== 15 Monoid, Semigroup
+=== 15.10 Reusing algebras by asking for algebras
+==== Exercise
+[source]
+----
+include::ch15_15.10_0.hs[]
+----
+
+=== 15.11 Madness
+I guess the `madlibbinBetter'` is "better", but nothing to blow my mind as of now.
+[source]
+----
+include::ch15_15.11_0.hs[]
+----
+
+=== 15.12 Better living through QuickCheck
+==== Intermission: Exercise
+[source]
+----
+include::ch15_15.12_0.hs[]
+----
+
+=== 15.14 Chapter exercises
+==== Semigroup exercises
+. `data Trivial = Trivial deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_0.hs[]
+----

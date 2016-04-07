@@ -540,6 +540,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_14_3_conventional_testing">14.3 Conventional testing</a></li>
 <li><a href="#_14_5_morse_code">14.5 Morse code</a></li>
 <li><a href="#_14_6_chapter_exercises">14.6 Chapter Exercises</a></li>
+<li><a href="#_hangman_testing">Hangman testing</a></li>
+</ul>
+</li>
+<li><a href="#_15_monoid_semigroup">15 Monoid, Semigroup</a>
+<ul class="sectlevel2">
+<li><a href="#_15_10_reusing_algebras_by_asking_for_algebras">15.10 Reusing algebras by asking for algebras</a></li>
+<li><a href="#_15_11_madness">15.11 Madness</a></li>
+<li><a href="#_15_12_better_living_through_quickcheck">15.12 Better living through QuickCheck</a></li>
+<li><a href="#_15_14_chapter_exercises">15.14 Chapter exercises</a></li>
 </ul>
 </li>
 </ul>
@@ -6259,10 +6268,91 @@ main = hspec $ do
 <i class="fa icon-caution" title="Caution"></i>
 </td>
 <td class="content">
-excercises 8 onwards I have no idea
+excercises 8 I have no idea
 </td>
 </tr>
 </table>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>propHalf <code>+++ OK, passed 100 tests.</code></p>
+</li>
+<li>
+<p>propSort <code>+++ OK, passed 100 tests.</code></p>
+</li>
+<li>
+<p>plusAssociative <code>+++ OK, passed 100 tests.</code></p>
+<div class="paragraph">
+<p>plusCommutative <code>+++ OK, passed 100 tests.</code></p>
+</div>
+</li>
+<li>
+<p>multiAssociative <code>+++ OK, passed 100 tests.</code></p>
+<div class="paragraph">
+<p>multiCommutative <code>+++ OK, passed 100 tests.</code></p>
+</div>
+</li>
+<li>
+<p>propQuotRem <code>+++ OK, passed 100 tests.</code></p>
+<div class="paragraph">
+<p>propDivMod <code>+++ OK, passed 100 tests.</code></p>
+</div>
+</li>
+<li>
+<p>powerAssociative</p>
+<div class="literalblock">
+<div class="content">
+<pre>*** Failed! Falsifiable (after 1 test):
+0
+0
+0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>powerCommutative</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>*** Failed! Falsifiable (after 2 tests):
+1
+0</pre>
+</div>
+</div>
+</li>
+<li>
+<p>propReverse <code>+++ OK, passed 100 tests.</code></p>
+</li>
+<li>
+<p>NOT DONE</p>
+</li>
+<li>
+<p>inConcatProp</p>
+<div class="literalblock">
+<div class="content">
+<pre>*** Failed! Falsifiable (after 2 tests and 2 shrinks):
+"a"
+"b"</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>concatProp <code>+++ OK, passed 100 tests.</code></p>
+</div>
+</li>
+<li>
+<p>lenTakeProb</p>
+<div class="literalblock">
+<div class="content">
+<pre>*** Failed! Falsifiable (after 3 tests and 1 shrink):
+2
+""</pre>
+</div>
+</div>
+</li>
+<li>
+<p>idProp <code>+++ OK, passed 100 tests.</code></p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
 <p><a href="https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/usingquickcheck" class="bare">https://github.com/lukleh/haskell-book-excercises/tree/gh-pages/ch14/usingquickcheck</a></p>
@@ -6288,7 +6378,8 @@ propHalf x = halfIdentity x == x
 -- 2.
 listOrdered :: (Ord a) =&gt; [a] -&gt; Bool
 listOrdered xs = snd $ foldr go (Nothing, True) xs
-  where go y (Nothing, t) = (Just y, t)
+  where go _ status@(_, False) = status
+        go y (Nothing, t) = (Just y, t)
         go y (Just x, t) = (Just y, x &gt;= y)
 
 propSort :: [Int] -&gt; Bool
@@ -6330,19 +6421,28 @@ powerCommutative x y = x ^ y == y ^ x
 
 -- 7.
 propReverse :: [Int] -&gt; Bool
-propReverse xs = (reverse . reverse) xs == id xs
+propReverse xs = (reverse . reverse) xs == xs
 
 -- 8.
-applyProp = (f $ a) == (f a)
+-- applyProp = (f $ a) == (f a)
 
-composeProp = f . g == \x -&gt; f (g x)
+-- composeProp = f . g == \x -&gt; f (g x)
 
--- foldr (:) == (++)
--- foldr (++) [] == concat
+-- 9.
+inConcatProp :: String -&gt; String -&gt; Bool
+inConcatProp xs ys = foldr (:) xs ys == (++) xs ys
 
--- f n xs = length (take n xs) == n
+concatProp :: [String] -&gt; Bool
+concatProp xs = foldr (++) [] xs == concat xs
 
--- f x = (read (show x)) == x
+-- 10.
+lenTakeProb :: Int -&gt; String -&gt; Bool
+lenTakeProb n xs = length (take n xs) == n
+
+-- 11.
+idProp :: Int -&gt; Bool
+idProp x = (read (show x)) == x
+
 
 main :: IO ()
 main = do
@@ -6356,8 +6456,377 @@ main = do
   quickCheck propDivMod
   quickCheck powerAssociative
   quickCheck powerCommutative
-  quickCheck propReverse</code></pre>
+  quickCheck propReverse
+  quickCheck inConcatProp
+  quickCheck concatProp
+  quickCheck lenTakeProb
+  quickCheck idProp</code></pre>
 </div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_failure">Failure</h4>
+<div class="paragraph">
+<p>Floating point precission cannot guarantee equality</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (quickCheck, verboseCheck)
+
+square x = x * x
+
+squareIdentity :: Double -&gt; Double
+squareIdentity = square . sqrt
+
+squareProp x = squareIdentity x == x
+
+main = do
+  quickCheck squareProp</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>*Main&gt; main
+*** Failed! Falsifiable (after 2 tests and 1037 shrinks):
+2.225078033262077e-308</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_idempotence">Idempotence</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (quickCheck, verboseCheck)
+import Data.Char (toUpper, toLower)
+import Data.List (sort)
+
+
+twice f = f . f
+fourTimes = twice . twice
+
+capitalizeWord :: String -&gt; String
+capitalizeWord w
+  | null w = w
+  | otherwise = [toUpper firstLetter] ++ map toLower others
+  where ([firstLetter], others) = splitAt 1 w
+
+propCapitalize :: String -&gt; Bool
+propCapitalize x =
+  (capitalizeWord x == twice capitalizeWord x) &amp;&amp; (capitalizeWord x == fourTimes capitalizeWord x)
+
+propSort :: [Int] -&gt; Bool
+propSort x =
+  (sort x == twice sort x) &amp;&amp; (sort x == fourTimes sort x)
+
+
+main = do
+  quickCheck propCapitalize
+  quickCheck propSort</code></pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>+++ OK, passed 100 tests.
++++ OK, passed 100 tests.</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_make_a_gen_random_generator_for_the_datatype">Make a Gen random generator for the datatype</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (sample, elements, frequency, Gen)
+
+data Fool =
+      Fulse
+    | Frue
+    deriving (Eq, Show)
+
+genFool :: Gen Fool
+genFool = elements [Fulse, Frue]
+
+genFoolMoreFulse :: Gen Fool
+genFoolMoreFulse = frequency [(2, return Fulse),
+                              (1, return Frue)]</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hangman_testing">Hangman testing</h3>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+not done
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">fillInCharacter :: Puzzle -&gt; Char -&gt; Puzzle
+fillInCharacter (Puzzle word filledInSoFar s) c =
+  Puzzle word newFilledInSoFar (c : s)
+  where zipper guessed wordChar guessChar =
+          if wordChar == guessed
+          then Just wordChar
+          else guessChar
+        newFilledInSoFar =
+          zipWith (zipper c) word filledInSoFar
+
+handleGuess :: Puzzle -&gt; Char -&gt; IO Puzzle
+handleGuess puzzle guess = do
+  putStrLn $ "Your guess was: " ++ [guess]
+  case (charInWord puzzle guess
+      , alreadyGuessed puzzle guess) of
+    (_, True) -&gt; do
+      putStrLn "You already guessed that\
+                \ character, pick something else!"
+      return puzzle
+    (True, _) -&gt; do
+      putStrLn "This character was in the word,\
+                \ filling in the word accordingly"
+      return (fillInCharacter puzzle guess)
+    (False, _) -&gt; do
+      putStrLn "This character wasn't in\
+                \ the word, try again."
+      return (fillInCharacter puzzle guess)</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_validating_ciphers">Validating ciphers</h4>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+need to do proper generators
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Char (ord, chr, isAlpha)
+import Test.QuickCheck (quickCheck, verboseCheck, Gen)
+
+caesar :: String -&gt; Int -&gt; String
+caesar [] _ = []
+caesar (x:xs) n
+  | isAlpha x = docyp x n (+) : caesar xs n
+  | otherwise = x : caesar xs n
+
+
+unCaesar :: String -&gt; Int -&gt; String
+unCaesar [] _ = []
+unCaesar (x:xs) n
+  | isAlpha x = docyp x n (-) : unCaesar xs n
+  | otherwise = x: unCaesar xs n
+
+docyp :: Char -&gt; Int -&gt; (Int -&gt; Int -&gt; Int) -&gt; Char
+docyp x n f = chr $ f (ord x - base) n `mod` range + base
+  where base = ord 'a'
+        range = 26
+
+
+-- vigenere "MEET AT DAWN" "ALLY" = "ALLY AL LYAL"
+
+vigenere :: String -&gt; String -&gt; String
+vigenere [] _ = ""
+vigenere xs ys = vigenere' xs (cycle (map ord ys)) where
+  vigenere' (x:xs) cyp@(n:ns)
+    | isAlpha x = docyp x n (+) : vigenere' xs ns
+      | otherwise = x : vigenere' xs cyp
+
+unVigenere :: String -&gt; String -&gt; String
+unVigenere [] _ = ""
+unVigenere xs ys = unVigenere' xs (cycle (map ord ys)) where
+  unVigenere' (x:xs) cyp@(n:ns)
+    | isAlpha x = docyp x n (+) : unVigenere' xs ns
+      | otherwise = x : unVigenere' xs cyp
+
+
+-- capitalGen :: Gen Char
+-- capitalGen = elements [A..Z]
+
+-- propCaesar :: Property
+-- propCaesar =
+--   forAll capitalGen
+--   (\c -&gt; (unCaesar (caesar text shift) shift) == text)
+
+
+propCaesar :: String -&gt; Int -&gt; Bool
+propCaesar text shift = (unCaesar (caesar text shift) shift) == text
+
+propVigenere :: String -&gt; String -&gt; Bool
+propVigenere text code = (unVigenere (vigenere text code) code) == text
+
+main :: IO ()
+main = do
+  verboseCheck propCaesar
+  verboseCheck propVigenere</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_15_monoid_semigroup">15 Monoid, Semigroup</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_15_10_reusing_algebras_by_asking_for_algebras">15.10 Reusing algebras by asking for algebras</h3>
+<div class="sect3">
+<h4 id="_exercise_2">Exercise</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">data Optional a =
+    Nada
+  | Only a
+  deriving (Eq, Show)
+
+instance Monoid a =&gt; Monoid (Optional a) where
+  mempty                      = Nada
+  mappend Nada      (Only a)  = Only a
+  mappend Nada      Nada      = Nada
+  mappend (Only a)  Nada      = Only a
+  mappend (Only a)  (Only b)  = Only (mappend a b)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_15_11_madness">15.11 Madness</h3>
+<div class="paragraph">
+<p>I guess the <code>madlibbinBetter'</code> is "better", but nothing to blow my mind as of now.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Monoid
+
+type Verb = String
+type Adjective = String
+type Adverb = String
+type Noun = String
+type Exclamation = String
+
+madlibbin' :: Exclamation
+              -&gt; Adverb
+              -&gt; Noun
+              -&gt; Adjective
+              -&gt; String
+madlibbin' e adv noun adj =
+    e &lt;&gt; "! he said " &lt;&gt;
+    adv &lt;&gt; " as he jumped into his car " &lt;&gt;
+    noun &lt;&gt; " and drove off with this " &lt;&gt;
+    adj &lt;&gt; " wife."
+
+
+madlibbinBetter' :: Exclamation
+                    -&gt; Adverb
+                    -&gt; Noun
+                    -&gt; Adjective
+                    -&gt; String
+madlibbinBetter' e adv noun adj = mconcat [e, "! he said ", adv, " as he jumped into his car ", noun, " and drove off with this ", adj, " wife."]</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_15_12_better_living_through_quickcheck">15.12 Better living through QuickCheck</h3>
+<div class="sect3">
+<h4 id="_intermission_exercise_2">Intermission: Exercise</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Monoid
+import Test.QuickCheck
+
+data Optional a =
+    Nada
+  | Only a
+  deriving (Eq, Show)
+
+monoidAssoc :: (Eq m, Monoid m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+monoidAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+newtype First' a =
+  First' { getFirst' :: Optional a }
+  deriving (Eq, Show)
+
+instance Arbitrary a =&gt; Arbitrary (First' a) where
+  arbitrary = do
+    x &lt;- arbitrary
+    frequency [ (1, return (First' (Only x)))
+              , (1, return (First' Nada))]
+
+instance Monoid (First' a) where
+  mempty = First' Nada
+  mappend (First' (Only x)) _ = First' (Only x)
+  mappend (First' Nada) (First' (Only x)) = First' (Only x)
+  mappend _ _ = First' Nada
+
+firstMappend :: First' a -&gt; First' a -&gt; First' a
+firstMappend = mappend
+
+type FirstMappend =
+     First' String
+  -&gt; First' String
+  -&gt; First' String
+  -&gt; Bool
+
+main :: IO ()
+main = do
+  quickCheck (monoidAssoc :: FirstMappend)
+  quickCheck (monoidLeftIdentity :: First' String -&gt; Bool)
+  quickCheck (monoidRightIdentity :: First' String -&gt; Bool)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_15_14_chapter_exercises">15.14 Chapter exercises</h3>
+<div class="sect3">
+<h4 id="_semigroup_exercises">Semigroup exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>data Trivial = Trivial deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Trivial = Trivial deriving (Eq, Show)
+
+instance Semigroup Trivial where
+  _ &lt;&gt; _ = Trivial
+
+instance Arbitrary Trivial where
+  arbitrary = return Trivial
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type TrivialAssoc = Trivial -&gt; Trivial -&gt; Trivial -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: TrivialAssoc)</code></pre>
+</div>
+</div>
+</li>
+</ol>
 </div>
 </div>
 </div>
@@ -6366,7 +6835,7 @@ main = do
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-04-03 19:00:05 CEST
+Last updated 2016-04-03 20:30:53 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
