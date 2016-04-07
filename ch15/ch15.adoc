@@ -28,3 +28,135 @@ include::ch15_15.12_0.hs[]
 ----
 include::ch15_15.14_0.hs[]
 ----
+. `newtype Identity a = Identity a`
++
+[source]
+----
+include::ch15_15.14_1.hs[]
+----
+. `data Two a b = Two a b`
++
+[source]
+----
+include::ch15_15.14_2.hs[]
+----
+. `data Three a b c = Three a b c`
++
+[source]
+----
+include::ch15_15.14_3.hs[]
+----
+. `data Four a b c d = Four a b c d`
++
+[source]
+----
+include::ch15_15.14_4.hs[]
+----
+. `newtype BoolConj = BoolConj Bool`
++
+[source]
+----
+include::ch15_15.14_5.hs[]
+----
+. `newtype BoolDisj = BoolDisj Bool`
++
+[source]
+----
+include::ch15_15.14_6.hs[]
+----
+. `data Or a b = Fst a | Snd b`
++
+[source]
+----
+include::ch15_15.14_7.hs[]
+----
+. `newtype Combine a b = Combine { unCombine :: (a -> b) }`
++
+WARNING: could not break the `CoArbitrary`
++
+[source]
+----
+include::ch15_15.14_8.hs[]
+----
+. `newtype Comp a = Comp { unComp :: (a -> a) }`
++
+WARNING: probably correct, do not undestand
++
+[source]
+----
+include::ch15_15.14_9.hs[]
+----
+. `data Validation a b = Failure a | Success b deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_10.hs[]
+----
+. `newtype AccumulateRight a b = AccumulateRight (Validation a b) deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_11.hs[]
+----
+. `newtype AccumulateBoth a b = AccumulateBoth (Validation a b) deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_12.hs[]
+----
+
+==== Monoid exercises
+. `data Trivial = Trivial deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_13.hs[]
+----
+. `newtype Identity a = Identity a deriving (Eq, Show)`
++
+[source]
+----
+include::ch15_15.14_14.hs[]
+----
+. `data Two a b = Two a b`
++
+[source]
+----
+include::ch15_15.14_15.hs[]
+----
+. `newtype BoolConj = BoolConj Bool`
++
+[source]
+----
+include::ch15_15.14_16.hs[]
+----
+. `newtype BoolDisj = BoolDisj Bool`
++
+[source]
+----
+include::ch15_15.14_17.hs[]
+----
+. `newtype Combine a b = Combine { unCombine :: (a -> b) }`
++
+WARNING: could not break the `CoArbitrary`
++
+[source]
+----
+include::ch15_15.14_18.hs[]
+----
+. `newtype Comp a = Comp { unComp :: (a -> a) }`
++
+WARNING: how come `unComp f 0` does not break?
++
+[source]
+----
+include::ch15_15.14_19.hs[]
+----
+. `newtype Mem s a....`
++
+WARNING: could not break the `CoArbitrary`
++
+[source]
+----
+include::ch15_15.14_20.hs[]
+----

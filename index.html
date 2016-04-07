@@ -6826,6 +6826,745 @@ main =
 </div>
 </div>
 </li>
+<li>
+<p><code>newtype Identity a = Identity a</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+newtype Identity a = Identity a deriving (Eq, Show)
+
+instance Semigroup a =&gt; Semigroup (Identity a) where
+  (Identity a) &lt;&gt; (Identity b) = Identity (a &lt;&gt; b)
+
+instance Arbitrary a =&gt; Arbitrary (Identity a) where
+  arbitrary = do
+    a &lt;- arbitrary
+    return (Identity a)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type IdentityAssoc = Identity String -&gt; Identity String -&gt; Identity String -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: IdentityAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Two a b = Two a b</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) =&gt; Semigroup (Two a b) where
+  (Two a b) &lt;&gt; (Two c d) = Two (a &lt;&gt; c) (b &lt;&gt; d)
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Two a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    return (Two a b)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type TwoAssoc = Two String Ordering -&gt; Two String Ordering -&gt; Two String Ordering -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: TwoAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Three a b c = Three a b c</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Three a b c = Three a b c deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b, Semigroup c) =&gt; Semigroup (Three a b c) where
+  (Three a b c) &lt;&gt; (Three a1 b1 c1) = Three (a &lt;&gt; a1) (b &lt;&gt; b1) (c &lt;&gt; c1)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) =&gt; Arbitrary (Three a b c) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    c &lt;- arbitrary
+    return (Three a b c)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type ThreeAssoc = Three String Ordering String -&gt; Three String Ordering String -&gt; Three String Ordering String -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: ThreeAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Four a b c d = Four a b c d</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;), Sum)
+
+data Four a b c d = Four a b c d deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b, Semigroup c, Semigroup d) =&gt; Semigroup (Four a b c d) where
+  (Four a b c d) &lt;&gt; (Four a1 b1 c1 d1) = Four (a &lt;&gt; a1) (b &lt;&gt; b1) (c &lt;&gt; c1) (d &lt;&gt; d1)
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) =&gt; Arbitrary (Four a b c d) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    c &lt;- arbitrary
+    d &lt;- arbitrary
+    return (Four a b c d)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type FourAssoc = Four String Ordering String String -&gt; Four String Ordering String String -&gt; Four String Ordering String String -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: FourAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype BoolConj = BoolConj Bool</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+newtype BoolConj = BoolConj Bool deriving (Eq, Show)
+
+instance Semigroup BoolConj where
+  (BoolConj a) &lt;&gt; (BoolConj b) = BoolConj (a &amp;&amp; b)
+
+instance Arbitrary BoolConj where
+  arbitrary = do
+    a &lt;- arbitrary
+    elements [(BoolConj a), (BoolConj a)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type BoolConjAssoc = BoolConj -&gt; BoolConj -&gt; BoolConj -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: BoolConjAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype BoolDisj = BoolDisj Bool</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+newtype BoolDisj = BoolDisj Bool deriving (Eq, Show)
+
+instance Semigroup BoolDisj where
+  (BoolDisj a) &lt;&gt; (BoolDisj b) = BoolDisj (a || b)
+
+instance Arbitrary BoolDisj where
+  arbitrary = do
+    a &lt;- arbitrary
+    elements [(BoolDisj a), (BoolDisj a)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type BoolDisjAssoc = BoolDisj -&gt; BoolDisj -&gt; BoolDisj -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Or a b = Fst a | Snd b</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Or a b = Fst a | Snd b deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) =&gt; Semigroup (Or a b) where
+  (Snd a) &lt;&gt; _ = Snd a
+  _ &lt;&gt; (Snd a) = (Snd a)
+  _ &lt;&gt; b = b
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Or a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    elements [(Fst a), (Snd b)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type OrAssoc = Or String Ordering -&gt; Or String Ordering -&gt; Or String Ordering -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: OrAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Combine a b = Combine { unCombine :: (a &#8594; b) }</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+could not break the <code>CoArbitrary</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;), Sum(Sum, getSum))
+
+newtype Combine a b = Combine { unCombine :: (a -&gt; b) }
+
+instance Semigroup b =&gt; Semigroup (Combine a b) where
+  Combine {unCombine=f} &lt;&gt; Combine {unCombine=g} = Combine (f &lt;&gt; g)
+
+-- instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Combine a b) where
+--   arbitrary = do
+--     a &lt;- arbitrary
+--     b &lt;- arbitrary
+--     elements [(Fst a), (Snd b)]
+
+-- instance CoArbitrary a =&gt; CoArbitrary (Combine a b) where
+--   coarbitrary Combine { unCombine = (a -&gt; b) }  = variant 0
+--   coarbitrary (Just x) = variant 1 . coarbitrary x
+
+-- semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+-- semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+-- type CombineAssoc = Combine String Ordering -&gt; Combine String Ordering -&gt; Combine String Ordering -&gt; Bool
+
+-- main :: IO ()
+-- main =
+--   quickCheck (semigroupAssoc :: CombineAssoc)
+
+f = Combine $ \n -&gt; Sum (n + 1)
+g = Combine $ \n -&gt; Sum (n - 1)
+
+main = do
+  print $ unCombine (f &lt;&gt; g ) $ 0
+  print $ unCombine (f &lt;&gt; g ) $ 1
+  print $ unCombine (f &lt;&gt; f ) $ 1
+  print $ unCombine (g &lt;&gt; f ) $ 1</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Comp a = Comp { unComp :: (a &#8594; a) }</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+probably correct, do not undestand
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;), Sum(..))
+
+newtype Comp a = Comp { unComp :: (a -&gt; a) }
+
+instance Semigroup a =&gt; Semigroup (Comp a) where
+  Comp {unComp=f} &lt;&gt; Comp {unComp=g} = Comp (f &lt;&gt; g)
+
+
+f = Comp $ \(Sum n) -&gt; Sum (n + 1)
+g = Comp $ \(Sum n) -&gt; Sum (n - 1)
+
+main = do
+  print $ unComp (f &lt;&gt; g ) $ 0
+  print $ unComp (f &lt;&gt; g ) $ 1
+  print $ unComp (f &lt;&gt; f ) $ 1
+  print $ unComp (g &lt;&gt; f ) $ 1</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Validation a b = Failure a | Success b deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Validation a b =
+  Failure a | Success b
+  deriving (Eq, Show)
+
+instance Semigroup a =&gt;
+  Semigroup (Validation a b) where
+    (Failure a) &lt;&gt; (Failure b)  = Failure (a &lt;&gt; b)
+    (Failure a) &lt;&gt; _            = Failure a
+    _           &lt;&gt; (Failure a)  = Failure a
+    a           &lt;&gt; _            = a
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Validation a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    elements [(Success a), (Failure b)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type ValidationAssoc = Validation String Ordering -&gt; Validation String Ordering -&gt; Validation String Ordering -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: ValidationAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype AccumulateRight a b = AccumulateRight (Validation a b) deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Validation a b =
+  Failure a | Success b
+  deriving (Eq, Show)
+
+newtype AccumulateRight a b =
+  AccumulateRight (Validation a b)
+  deriving (Eq, Show)
+
+instance Semigroup b =&gt;
+  Semigroup (AccumulateRight a b) where
+    (AccumulateRight (Success a)) &lt;&gt; (AccumulateRight (Success b))  = AccumulateRight (Success (a &lt;&gt; b))
+    (AccumulateRight (Failure a)) &lt;&gt; _                              = AccumulateRight (Failure a)
+    _                             &lt;&gt; (AccumulateRight (Failure a))  = AccumulateRight (Failure a)
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (AccumulateRight a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    elements [(AccumulateRight (Success a)), (AccumulateRight (Failure b))]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type AccumulateRightAssoc = AccumulateRight String Ordering -&gt; AccumulateRight String Ordering -&gt; AccumulateRight String Ordering -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: AccumulateRightAssoc)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype AccumulateBoth a b = AccumulateBoth (Validation a b) deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+
+data Validation a b =
+  Failure a | Success b
+  deriving (Eq, Show)
+
+newtype AccumulateBoth a b =
+  AccumulateBoth (Validation a b)
+  deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) =&gt;
+  Semigroup (AccumulateBoth a b) where
+    (AccumulateBoth (Success a)) &lt;&gt; (AccumulateBoth (Success b))  = AccumulateBoth (Success (a &lt;&gt; b))
+    (AccumulateBoth (Failure a)) &lt;&gt; (AccumulateBoth (Failure b))  = AccumulateBoth (Failure (a &lt;&gt; b))
+    _                            &lt;&gt; (AccumulateBoth (Failure a))  = AccumulateBoth (Failure a)
+    (AccumulateBoth (Failure a)) &lt;&gt; _                             = AccumulateBoth (Failure a)
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (AccumulateBoth a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    elements [(AccumulateBoth (Success a)), (AccumulateBoth (Failure b))]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+type AccumulateBothAssoc = AccumulateBoth String Ordering -&gt; AccumulateBoth String Ordering -&gt; AccumulateBoth String Ordering -&gt; Bool
+
+main :: IO ()
+main =
+  quickCheck (semigroupAssoc :: AccumulateBothAssoc)</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_monoid_exercises">Monoid exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>data Trivial = Trivial deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+import Data.Monoid (Monoid)
+
+data Trivial = Trivial deriving (Eq, Show)
+
+instance Semigroup Trivial where
+  _ &lt;&gt; _ = Trivial
+
+instance Monoid Trivial where
+  mempty = Trivial
+  mappend = (&lt;&gt;)
+
+instance Arbitrary Trivial where
+  arbitrary = return Trivial
+
+type TrivialAssoc = Trivial -&gt; Trivial -&gt; Trivial -&gt; Bool
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: TrivialAssoc)
+  quickCheck (monoidLeftIdentity :: Trivial -&gt; Bool)
+  quickCheck (monoidRightIdentity :: Trivial -&gt; Bool)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Identity a = Identity a deriving (Eq, Show)</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+import Data.Monoid (Monoid)
+
+newtype Identity a = Identity a deriving (Eq, Show)
+
+instance Semigroup a =&gt; Semigroup (Identity a) where
+  (Identity a) &lt;&gt; (Identity b) = Identity (a &lt;&gt; b)
+
+instance (Semigroup a, Monoid a) =&gt; Monoid (Identity a) where
+  mempty = Identity mempty
+  mappend = (&lt;&gt;)
+
+instance Arbitrary a =&gt; Arbitrary (Identity a) where
+  arbitrary = do
+    a &lt;- arbitrary
+    return (Identity a)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+type IdentityAssoc = Identity String -&gt; Identity String -&gt; Identity String -&gt; Bool
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: IdentityAssoc)
+  quickCheck (monoidLeftIdentity :: Identity String -&gt; Bool)
+  quickCheck (monoidRightIdentity :: Identity String -&gt; Bool)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>data Two a b = Two a b</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+import Data.Monoid (Monoid)
+
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) =&gt; Semigroup (Two a b) where
+  (Two a b) &lt;&gt; (Two c d) = Two (a &lt;&gt; c) (b &lt;&gt; d)
+
+instance (Semigroup a, Monoid a, Semigroup b, Monoid b) =&gt; Monoid (Two a b) where
+  mempty = Two mempty mempty
+  mappend = (&lt;&gt;)
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Two a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    return (Two a b)
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+type TwoAssoc = Two String Ordering -&gt; Two String Ordering -&gt; Two String Ordering -&gt; Bool
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: TwoAssoc)
+  quickCheck (monoidLeftIdentity :: Two String Ordering -&gt; Bool)
+  quickCheck (monoidRightIdentity :: Two String Ordering -&gt; Bool)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype BoolConj = BoolConj Bool</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+import Data.Monoid (Monoid)
+
+newtype BoolConj = BoolConj Bool deriving (Eq, Show)
+
+instance Semigroup BoolConj where
+  (BoolConj a) &lt;&gt; (BoolConj b) = BoolConj (a &amp;&amp; b)
+
+instance Monoid BoolConj where
+  mempty = BoolConj True
+  mappend = (&lt;&gt;)
+
+instance Arbitrary BoolConj where
+  arbitrary = do
+    a &lt;- arbitrary
+    elements [(BoolConj a), (BoolConj a)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+type BoolConjAssoc = BoolConj -&gt; BoolConj -&gt; BoolConj -&gt; Bool
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: BoolConjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolConj -&gt; Bool)
+  quickCheck (monoidRightIdentity :: BoolConj -&gt; Bool)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype BoolDisj = BoolDisj Bool</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;))
+import Data.Monoid (Monoid)
+
+newtype BoolDisj = BoolDisj Bool deriving (Eq, Show)
+
+instance Semigroup BoolDisj where
+  (BoolDisj a) &lt;&gt; (BoolDisj b) = BoolDisj (a || b)
+
+instance Monoid BoolDisj where
+  mempty = BoolDisj False
+  mappend = (&lt;&gt;)
+
+instance Arbitrary BoolDisj where
+  arbitrary = do
+    a &lt;- arbitrary
+    elements [(BoolDisj a), (BoolDisj a)]
+
+semigroupAssoc :: (Eq m, Semigroup m) =&gt; m -&gt; m -&gt; m -&gt; Bool
+semigroupAssoc a b c = (a &lt;&gt; (b &lt;&gt; c)) == ((a &lt;&gt; b) &lt;&gt; c)
+
+monoidLeftIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidLeftIdentity a = (mempty &lt;&gt; a) == a
+
+monoidRightIdentity :: (Eq m, Monoid m, Semigroup m) =&gt; m -&gt; Bool
+monoidRightIdentity a = (a &lt;&gt; mempty) == a
+
+type BoolDisjAssoc = BoolDisj -&gt; BoolDisj -&gt; BoolDisj -&gt; Bool
+
+main :: IO ()
+main = do
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolDisj -&gt; Bool)
+  quickCheck (monoidRightIdentity :: BoolDisj -&gt; Bool)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Combine a b = Combine { unCombine :: (a &#8594; b) }</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+could not break the <code>CoArbitrary</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;), Sum(Sum, getSum))
+import Data.Monoid (Monoid)
+
+newtype Combine a b = Combine { unCombine :: (a -&gt; b) }
+
+instance Semigroup b =&gt; Semigroup (Combine a b) where
+  Combine {unCombine=f} &lt;&gt; Combine {unCombine=g} = Combine (f &lt;&gt; g)
+
+instance (Semigroup b, Monoid b) =&gt; Monoid (Combine a b) where
+  mempty = Combine mempty
+  mappend = (&lt;&gt;)
+
+f = Combine $ \n -&gt; Sum (n + 1)
+g = Combine $ \n -&gt; Sum (n - 1)
+
+main = do
+  print $ unCombine (f &lt;&gt; g ) $ 0
+  print $ unCombine (f &lt;&gt; g ) $ 1
+  print $ unCombine (f &lt;&gt; f ) $ 1
+  print $ unCombine (g &lt;&gt; f ) $ 1
+  print $ unCombine (mappend mempty f) 0 == unCombine f 0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Comp a = Comp { unComp :: (a &#8594; a) }</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+same problem as in the above
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, quickCheck, elements)
+import Data.Semigroup (Semigroup, (&lt;&gt;), Sum(..))
+import Data.Monoid (Monoid)
+
+newtype Comp a = Comp { unComp :: (a -&gt; a) }
+
+instance Semigroup a =&gt; Semigroup (Comp a) where
+  Comp {unComp=f} &lt;&gt; Comp {unComp=g} = Comp (f &lt;&gt; g)
+
+instance (Semigroup a, Monoid a) =&gt; Monoid (Comp a) where
+  mempty = Comp id
+  mappend = (&lt;&gt;)
+
+
+f = Comp $ \(Sum n) -&gt; Sum (n + 1)
+g = Comp $ \(Sum n) -&gt; Sum (n - 1)
+
+main = do
+  print $ unComp (f &lt;&gt; g ) $ 0
+  print $ unComp (f &lt;&gt; g ) $ 1
+  print $ unComp (f &lt;&gt; f ) $ 1
+  print $ unComp (g &lt;&gt; f ) $ 1
+  print $ unComp (mappend mempty f) 0 == unComp f 0</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>newtype Mem s a&#8230;&#8203;.</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+could not break the <code>CoArbitrary</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Monoid (Monoid)
+
+newtype Mem s a =
+  Mem {
+    runMem :: s -&gt; (a,s)
+  }
+
+instance Monoid a =&gt; Monoid (Mem s a) where
+  mempty = Mem $ \s -&gt; (mempty, s)
+  mappend = undefined
+
+
+f' = Mem $ \s -&gt; ("hi", s + 1)
+main = do
+  print $ runMem (f' &lt;&gt; mempty) 0
+  print $ runMem (mempty &lt;&gt; f') 0
+  print $ (runMem mempty 0 :: (String, Int))
+  print $ runMem (f' &lt;&gt; mempty) 0 == runMem f' 0
+  print $ runMem (mempty &lt;&gt; f') 0 == runMem f' 0</code></pre>
+</div>
+</div>
+</li>
 </ol>
 </div>
 </div>
