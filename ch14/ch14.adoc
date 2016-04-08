@@ -118,7 +118,7 @@ include::ch14_14.6_1.hs[]
 ----
 
 === Hangman testing
-WARNING: not done
+WARNING: not done, will have to come back to this later
 [source]
 ----
 include::ch14_14.6_hangman.hs[]

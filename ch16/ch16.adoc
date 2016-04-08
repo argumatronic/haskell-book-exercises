@@ -1,0 +1,70 @@
+== 16 Functor
+=== 116.4 Let’s talk about f , baby
+==== Intermission: Exercises
+because kind of `(->)` is `(->) pass:[::] pass:[*] -> pass:[*] -> pass:[*]` the following is
+
+. kind of `a` if `*`
+. `b` has kind `pass:[*] -> pass:[*]`, `T` has kind `pass:[*] -> pass:[*]`
+. `c` has kind `pass:[*] -> pass:[*] -> pass:[*]`
+
+=== 16.7 Commonly used functors
+==== The functors are stacked and that’s a fact
+little write out of what happens when we compose functors
+
+....
+replaceWithP = const 'p'
+
+:t replaceWithP 
+replaceWithP :: b -> Char
+
+lms = [Just "Ave", Nothing, Just "woohoo"]
+
+now we try try to this:
+(fmap . fmap) replaceWithP lms
+and the result is:
+[Just 'p',Nothing,Just 'p']
+
+let's disect this:
+
+:t (fmap . fmap)
+(Functor f, Functor f1) => (a -> b) -> f (f1 a) -> f (f1 b)
+
+fmap :: Functor f => (m -> n) -> f m -> f n
+
+fmap :: Functor g => (x -> y) -> g x -> g y
+
+
+(x -> y) -> g x -> g y  
+apply: replaceWithP :: b -> Char
+result is:
+g b -> g Char
+that is (b -> Char) substitued in (g x -> g y)
+
+(m -> n) -> f m -> f n
+apply: (g b -> g Char)
+result is:
+f (g b) -> f (g Char)
+that is (b -> Char) substitued in (f m -> f n)
+
+
+f (g b) -> f (g Char)
+apply: lms
+result is:
+f unwraps the list
+g unwraps the Maybe
+replaceWithP is applied to the value
+
+voilà, it does work as advertised :)
+
+three compositions go one more level deeper
+(fmap . fmap . fmap)
+as we can also fmap over String 
+....
+
+==== One more round for the P-Funkshun
+[source]
+----
+include::ch16_16.7_0.hs[]
+----
+
+==== Intermission: Lifting Exercises

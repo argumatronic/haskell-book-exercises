@@ -7,7 +7,9 @@ newtype Mem s a =
 
 instance Monoid a => Monoid (Mem s a) where
   mempty = Mem $ \s -> (mempty, s)
-  mappend Mem {runMem = f} Mem {runMem = g} = Mem $ mappend f g
+  mappend Mem {runMem = f} Mem {runMem = g} = Mem $ \x -> let (a, b) = g x
+                                                              (c, d) = f b
+                                                          in (a <> c, d)
 
 
 f' = Mem $ \s -> ("hi", s + 1)

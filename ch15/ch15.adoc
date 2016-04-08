@@ -154,7 +154,7 @@ include::ch15_15.14_19.hs[]
 ----
 . `newtype Mem s a....`
 +
-WARNING: could not break the `CoArbitrary`
+WARNING: awkward, what is this for? and again, no `CoArbitrary`
 +
 [source]
 ----
