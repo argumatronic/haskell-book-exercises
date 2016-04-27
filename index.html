@@ -9337,10 +9337,36 @@ main = do
 <p><code>let a :: Monad m &#8658; m a &#8594; m (a &#8594; b) &#8594; m b; a = flip ap</code></p>
 </li>
 <li>
-<p>Don&#8217;t know. Signature tells it is <code>mapM</code>, but how to make it?</p>
+<p>Kinda clunky and there is already <code>forM</code> that does that. Anyway, I cracked it. Good feeling.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">meh :: Monad m =&gt; [a] -&gt; (a -&gt; m b) -&gt; m [b]
+meh [] _ = pure []
+meh (x:xs) f = (++) &lt;$&gt; (fmap (\a -&gt; [a]) $ f x) &lt;*&gt; (meh xs f)
+
+main = do
+  print $ meh [1..10] (\x -&gt; if odd x then Just x else Just (x * 2))</code></pre>
+</div>
+</div>
 </li>
 <li>
-<p>same thing</p>
+<p>Still not totally clear about <code>join</code>, need to play with it more. And again <code>sequence</code> does just the same.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad (join)
+
+
+meh :: Monad m =&gt; [a] -&gt; (a -&gt; m b) -&gt; m [b]
+meh [] _ = pure []
+meh (x:xs) f = (++) &lt;$&gt; (fmap (\a -&gt; [a]) $ f x) &lt;*&gt; (meh xs f)
+
+flipType :: (Monad m) =&gt; [m a] -&gt; m [a]
+flipType xs = meh xs (join . pure)
+
+main = do
+  print $ flipType [Just 2, Just 5, Just 10]</code></pre>
+</div>
+</div>
 </li>
 </ol>
 </div>

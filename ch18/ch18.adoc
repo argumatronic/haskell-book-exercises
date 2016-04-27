@@ -55,5 +55,15 @@ include::ch18_18.7_4.hs[]
 . `let l1 :: Monad m => (a -> b) -> m a -> m b; l1 = liftM`
 . `let l2 :: Monad m => (a -> b -> c) -> m a -> m b -> m c; l2 = liftM2`
 . `let a :: Monad m => m a -> m (a -> b) -> m b; a = flip ap`
-. Don't know. Signature tells it is `mapM`, but how to make it?
-. same thing
+. Kinda clunky and there is already `forM` that does that. Anyway, I cracked it. Good feeling.
++
+[source]
+----
+include::ch18_18.7_5.hs[]
+----
+. Still not totally clear about `join`, need to play with it more. And again `sequence` does just the same.
++
+[source]
+----
+include::ch18_18.7_6.hs[]
+----
