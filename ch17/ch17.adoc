@@ -1,0 +1,168 @@
+== 17 Applicative
+=== 17.5 Applicative in use
+==== Short Exercises
+
+. add `<$>`
++
+[source]
+----
+include::ch17_17.5_1.hs[]
+----
+. add `<$>` and `<*>`, longer version of `liftA2`
++
+[source]
+----
+include::ch17_17.5_2.hs[]
+----
+. add `<$>` and `<*>`, longer version of `liftA2`
++
+[source]
+----
+include::ch17_17.5_3.hs[]
+----
+. `(Maybe Int, Maybe Int) -> Maybe Int` using `Sum`? dunno
++
+WARNING: something is wrong here
++
+[source]
+----
+include::ch17_17.5_4.hs[]
+----
+
+==== Identity Exercise
+[source]
+----
+include::ch17_17.5_5.hs[]
+----
+
+==== Constant Exercise
+WARNING: euuuuh, what?
+[source]
+----
+include::ch17_17.5_6.hs[]
+----
+
+==== Maybe Applicative Exercise
+. `const <$> Just "Hello" <*> pure "World"` - pure in the context turns into Maybe
+. `(,,,) <$> Just 90 <*> Just 10 <*> Just "Tierness" <*> pure [1, 2, 3]` - all has to be in Maybe, and me fmap to start with
+
+=== 17.8 ZipList Monoid
+[source]
+----
+include::ch17_17.5_7.hs[]
+----
+
+==== List Applicative Exercise
+WARNING: had to make somehow "limited" arbitrary, the infinite arbitrary is `arbitrary = Cons <$> arbitrary <*> arbitrary` and commented out
+[source]
+----
+include::ch17_17.5_8.hs[]
+----
+
+==== Exercise
+NOTE: the tests are taking a long time, compared to tests done so far
+[source]
+----
+include::ch17_17.5_9.hs[]
+----
+
+==== Exercise
+`Sum` and `Validation` `Applicative`
+[source]
+----
+include::ch17_17.5_10.hs[]
+----
+
+=== 17.9 Chapter Exercises
+WARNING: doing something wrong here, what do mean "specialize and test in REPL"? some hint, example?
+
+. `[]`
++
+[source]
+----
+(pure :: (a -> [] a)) 4
+[4]
+
+((<*>) :: [] (a -> b) -> [] a -> [] b) [(+1)] [1]
+[2]
+----
+. `IO`
++
+[source]
+----
+(pure :: a -> IO a) "sdf"
+"sdf"
+
+((<*>) :: IO (a -> b) -> IO a -> IO b) (return (+2)) (return 4)
+6
+----
+. `(,) a`
++
+[source]
+----
+((pure :: Monoid b => a -> ((,) b) a) 4) :: (String, Int)
+("",4)
+
+((<*>) :: Monoid c => (,) c (a -> b) -> (,) c a -> (,) c b) ("sdf", (+4)) ("sdf", 7)
+("sdfsdf",11)
+----
+. `(->) e`
++
+[source]
+----
+pure :: a -> ((->) e) a
+(<*>) :: ((->) e) (a -> b) -> ((->) e) a -> ((->) e) b
+----
+
+For all of those, you need also `deriving Eq` so you can use quickcheck
+
+. `newtype Identity a = Identity a deriving Show`
++
+[source]
+----
+include::ch17_17.9_1.hs[]
+----
+. `data Pair a = Pair a a deriving Show`
++
+[source]
+----
+include::ch17_17.9_2.hs[]
+----
+. `data Two a b = Two a b`
++
+[source]
+----
+include::ch17_17.9_3.hs[]
+----
+. `data Three a b c = Three a b c`
++
+[source]
+----
+include::ch17_17.9_4.hs[]
+----
+. `data Three' a b = Three' a b b`
++
+[source]
+----
+include::ch17_17.9_5.hs[]
+----
+. `data Four a b c d = Four a b c d`
++
+[source]
+----
+include::ch17_17.9_6.hs[]
+----
+. `data Four' a b = Four' a a a b`
++
+[source]
+----
+include::ch17_17.9_7.hs[]
+----
+
+==== Combinations
+neat, but not sure how I would put some condition in
+
+[source]
+----
+include::ch17_17.9_8.hs[]
+----

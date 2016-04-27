@@ -1,5 +1,5 @@
 == 16 Functor
-=== 116.4 Let’s talk about f , baby
+=== 16.4 Let’s talk about f , baby
 ==== Intermission: Exercises
 because kind of `(->)` is `(->) pass:[::] pass:[*] -> pass:[*] -> pass:[*]` the following is
 

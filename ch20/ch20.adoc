@@ -1,0 +1,105 @@
+== 20 Foldable
+=== 20.5 Some basic derived operations
+==== Exercises
+In all these, the key point to realise is that all the elements need to be monoids and we need the appropriate monoid to give the functionality we need.
+
+. `sum`
++
+[source]
+----
+include::ch20_20.5_1.hs[]
+----
+. `product`
++
+[source]
+----
+include::ch20_20.5_2.hs[]
+----
+. `elem`
++
+[source]
+----
+include::ch20_20.5_3.hs[]
+----
+. `minimum` that does not break, we have `Maybe`. Had to look in the `Foldable` source code and discovered nice `Min` type that did not show in the docs because it is not exported .... :/ So I've copied it.
++
+[source]
+----
+include::ch20_20.5_4.hs[]
+----
+. `maximum` - same story as with `minimum`
++
+[source]
+----
+include::ch20_20.5_5.hs[]
+----
+. `null`, okay, my line of toughts was that if it is empty, the length should be 0. The official sources think otherwise, not bad tough: `null = foldr (\_ _ -> False) True`
++
+[source]
+----
+include::ch20_20.5_6.hs[]
+----
+. `length` I have learned the trick from 'null' source code :)
++
+[source]
+----
+include::ch20_20.5_7.hs[]
+----
+. `toList` is just an old school `foldr`
++
+[source]
+----
+include::ch20_20.5_8.hs[]
+----
+. `fold`, thanks for the `foldMap` hint ;), after that the difference in the signatures made it all clear. neat
++
+[source]
+----
+include::ch20_20.5_9.hs[]
+----
+. `foldMap`, the official code uses `foldMap f = foldr (mappend . f) mempty`. Okay, I've learned something here.
++
+[source]
+----
+include::ch20_20.5_10.hs[]
+----
+
+=== 20.6 Chapter Exercises
+These exercises basically go from zero to three arguments to work with - in a way. The only way how to produce single value in multiple arguments was to `mappend` them. I hope this is right. Real life example would help.
+
+. `Constant` This one is interesting, what decides the resulting type (and the value) is actually the function we are passing. The type of the function to be specific. Yeah, what else const as Foldable can be.
++
+[source]
+----
+include::ch20_20.6_1.hs[]
+----
+. `Two`
++
+[source]
+----
+include::ch20_20.6_2.hs[]
+----
+. `Three`
++
+[source]
+----
+include::ch20_20.6_3.hs[]
+----
+. `Three'`
++
+[source]
+----
+include::ch20_20.6_4.hs[]
+----
+. `Four'`
++
+[source]
+----
+include::ch20_20.6_5.hs[]
+----
+
+Yaaaay, `filterF`. Got stuck because I messed up types in `foldMap`, had to peek in the answer, then I saw my mistake. Therefore, to have correct answers is crucial!!!
+[source]
+----
+include::ch20_20.6_6.hs[]
+----
