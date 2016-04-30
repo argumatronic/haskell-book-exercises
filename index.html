@@ -582,6 +582,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_20_6_chapter_exercises">20.6 Chapter Exercises</a></li>
 </ul>
 </li>
+<li><a href="#_21_traversable">21 Traversable</a>
+<ul class="sectlevel2">
+<li><a href="#_21_12_chapter_exercises">21.12 Chapter Exercises</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -9262,7 +9267,7 @@ main = do
 </div>
 </li>
 <li>
-<p>pretty cool, I ahd to fix the <code>Arbitrary</code> instance for <code>List</code>. I had it broken before.</p>
+<p>pretty cool, I had to fix the <code>Arbitrary</code> instance for <code>List</code>. I had it broken before.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Applicative
@@ -9744,10 +9749,379 @@ main = do
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_21_traversable">21 Traversable</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_21_12_chapter_exercises">21.12 Chapter Exercises</h3>
+<div class="sect3">
+<h4 id="_traversable_instances">Traversable instances</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Identity</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)
+
+newtype Identity a = Identity a
+  deriving (Eq, Ord, Show)
+
+instance Functor Identity where
+  fmap f (Identity a) = Identity (f a)
+
+instance Foldable Identity where
+  foldMap f (Identity a) = f a
+
+instance Traversable Identity where
+  -- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  traverse f (Identity a) = Identity &lt;$&gt; f a
+
+instance Arbitrary a =&gt; Arbitrary (Identity a) where
+  arbitrary = do
+    a &lt;- arbitrary
+    return (Identity a)
+
+instance Eq a =&gt; EqProp (Identity a) where (=-=) = eq
+
+main = do
+  let trigger = undefined :: Identity (Int, Int, [Int])
+  quickBatch (traversable trigger)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Constant</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)
+
+newtype Constant a b =
+  Constant { getConstant :: a }
+  deriving (Eq, Ord, Show)
+
+instance Functor (Constant a) where
+  fmap _ (Constant a) = Constant a
+  -- does not work, why?
+  -- fmap _ c = c
+
+instance Foldable (Constant a) where
+  foldMap _ _ = mempty
+
+instance Traversable (Constant a) where
+  -- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  traverse _ (Constant a) = pure $ Constant a
+
+instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Constant a b) where
+  arbitrary = do
+    a &lt;- arbitrary
+    return (Constant a)
+
+instance (Eq a, Eq b) =&gt; EqProp (Constant a b) where (=-=) = eq
+
+main = do
+  let trigger = undefined :: Constant Int (Int, Int, [Int])
+  quickBatch (traversable trigger)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Maybe</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary, elements)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)
+
+data Optional a =
+    Nada
+  | Yep a
+  deriving (Eq, Ord, Show)
+
+instance Functor Optional where
+  fmap _ Nada = Nada
+  fmap f (Yep a) = Yep (f a)
+
+instance Foldable Optional where
+  foldMap _ Nada = mempty
+  foldMap f (Yep a) = f a
+
+instance Traversable Optional where
+  -- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  traverse _ Nada = pure $ Nada
+  traverse f (Yep a) = Yep &lt;$&gt; f a
+
+instance Arbitrary a =&gt; Arbitrary (Optional a) where
+  arbitrary = do
+    a &lt;- arbitrary
+    elements [Nada, (Yep a)]
+
+instance Eq a =&gt; EqProp (Optional a) where (=-=) = eq
+
+main = do
+  let trigger = undefined :: Optional (Int, Int, [Int])
+  quickBatch (traversable trigger)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>List</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Monoid ((&lt;&gt;))
+import Test.QuickCheck (Arbitrary, arbitrary, frequency)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)
+
+data List a =
+    Nil
+  | Cons a (List a)
+  deriving (Eq, Ord, Show)
+
+instance Functor List where
+  fmap _ Nil = Nil
+  fmap f (Cons a la) = Cons (f a) (fmap f la)
+
+instance Foldable List where
+  foldMap _ Nil = mempty
+  foldMap f (Cons a as) = f a &lt;&gt; foldMap f as
+
+instance Traversable List where
+  -- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  traverse f Nil = pure Nil
+  traverse f (Cons a as) = Cons &lt;$&gt; f a &lt;*&gt; traverse f as
+
+instance Arbitrary a =&gt; Arbitrary (List a) where
+  arbitrary = do
+    x &lt;- arbitrary
+    y &lt;- arbitrary
+    frequency [(1, return Nil),
+               (10, return (Cons x y))]
+
+take' :: Int -&gt; List a -&gt; List a
+take' 0 _ = Nil
+take' _ Nil = Nil
+take' n (Cons x xs) = Cons x (take' (n - 1) xs)
+
+instance Eq a =&gt; EqProp (List a) where
+  xs =-= ys = xs' `eq` ys'
+    where xs' = take' 3000 xs
+          ys' = take' 3000 ys
+
+main = do
+  let trigger = undefined :: List (Int, Int, [Int])
+  quickBatch (traversable trigger)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Tree</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (Arbitrary, arbitrary)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)
+
+data Three a b c =
+  Three a b c
+  deriving (Eq, Ord, Show)
+
+instance Functor (Three a b) where
+  fmap f (Three a b c) = Three a b (f c)
+
+instance Foldable (Three a b) where
+  foldMap f (Three a b c) = f c
+
+instance Traversable (Three a b) where
+  -- traverse :: (Applicative f, Traversable t) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  traverse f (Three a b c) = (Three a b) &lt;$&gt; f c
+
+instance (Arbitrary a, Arbitrary b, Arbitrary c) =&gt; Arbitrary (Three a b c) where
+  arbitrary = do
+    a &lt;- arbitrary
+    b &lt;- arbitrary
+    c &lt;- arbitrary
+    return (Three a b c)
+
+instance (Eq a, Eq b, Eq c) =&gt; EqProp (Three a b c) where (=-=) = eq
+
+main = do
+  let trigger = undefined :: Three Int Int (Int, String, [Int])
+  quickBatch (traversable trigger)</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>. Tree'
++
+[source]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>import Data.Monoid &lt;&gt;
+import Test.QuickCheck (Arbitrary, arbitrary)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)</p>
+</div>
+<div class="paragraph">
+<p>data Three' a b =
+  Three' a b b
+  deriving (Eq, Ord, Show)</p>
+</div>
+<div class="paragraph">
+<p>instance Functor (Three' a) where
+  fmap f (Three' a b c) = Three' a (f b) (f c)</p>
+</div>
+<div class="paragraph">
+<p>instance Foldable (Three' a) where
+  foldMap f (Three' a b c) = (f b) &lt;&gt; (f c)</p>
+</div>
+<div class="paragraph">
+<p>instance Traversable (Three' a) where
+ &#8201;&#8212;&#8201;traverse :: (Applicative f, Traversable t) &#8658; (a &#8594; f b) &#8594; t a &#8594; f (t b)
+  traverse f (Three' a b c) = (Three' a) &lt;$&gt; f b &lt;*&gt; f c</p>
+</div>
+<div class="paragraph">
+<p>instance (Arbitrary a, Arbitrary b) &#8658; Arbitrary (Three' a b) where
+  arbitrary = do
+    a &#8592; arbitrary
+    b &#8592; arbitrary
+    return (Three' a b b)</p>
+</div>
+<div class="paragraph">
+<p>instance (Eq a, Eq b) &#8658; EqProp (Three' a b) where (=-=) = eq</p>
+</div>
+<div class="paragraph">
+<p>main = do
+  let trigger = undefined :: Three' Int (Int, String, [Int])
+  quickBatch (traversable trigger)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>. S
++
+NOTE: tests are passing, but I kind of hacked it until it compiled.
++
+[source]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>{-# LANGUAGE FlexibleInstances #-}</p>
+</div>
+<div class="paragraph">
+<p>import Data.Monoid &lt;&gt;
+import Test.QuickCheck (Arbitrary, arbitrary)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)</p>
+</div>
+<div class="paragraph">
+<p>data S n a = S (n a) a
+  deriving (Eq, Ord, Show)</p>
+</div>
+<div class="paragraph">
+<p>instance Functor n &#8658; Functor (S n) where
+  fmap f (S na a) = S (fmap f na) (f a)</p>
+</div>
+<div class="paragraph">
+<p>instance Foldable n &#8658; Foldable (S n) where
+  foldMap f (S na a) = (foldMap f na) &lt;&gt; (f a)</p>
+</div>
+<div class="paragraph">
+<p>instance Traversable n &#8658; Traversable (S n) where
+ &#8201;&#8212;&#8201;traverse :: (Applicative f, Traversable t) &#8658; (a &#8594; f b) &#8594; t a &#8594; f (t b)
+  traverse f (S na a) = S &lt;$&gt; traverse f na &lt;*&gt; f a</p>
+</div>
+<div class="paragraph">
+<p>instance Arbitrary a &#8658; Arbitrary (S [] a) where
+  arbitrary = do
+    a &#8592; arbitrary
+    b &#8592; arbitrary
+    return (S [a] b)</p>
+</div>
+<div class="paragraph">
+<p>instance Eq a &#8658; EqProp (S [] a) where (=-=) = eq</p>
+</div>
+<div class="paragraph">
+<p>main = do
+  let trigger = undefined :: S [] (Int, String, [Int])
+  quickBatch (traversable trigger)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>==== Instances for Tree
+[source]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>import Data.Monoid &lt;&gt;
+import Test.QuickCheck (Arbitrary, arbitrary,frequency)
+import Test.QuickCheck.Checkers (quickBatch, eq, (=-=), EqProp)
+import Test.QuickCheck.Classes (traversable)</p>
+</div>
+<div class="paragraph">
+<p>data Tree a =
+    Empty
+  | Leaf a
+  | Node (Tree a) a (Tree a)
+  deriving (Eq, Show)</p>
+</div>
+<div class="paragraph">
+<p>instance Functor Tree where
+  fmap _ Empty = Empty
+  fmap f (Leaf a) = Leaf (f a)
+  fmap f (Node tl a tr) = Node (fmap f tl) (f a) (fmap f tr)</p>
+</div>
+<div class="paragraph">
+<p>&#8201;&#8212;&#8201;foldMap is a bit easier and looks more natural,&#8201;&#8212;&#8201;but you can do foldr too for extra credit.
+instance Foldable Tree where
+  foldMap _ Empty = mempty
+  foldMap f (Leaf a) = f a
+  foldMap f (Node tl a tr) = (foldMap f tl) &lt;&gt; (f a) &lt;&gt; (foldMap f tr)</p>
+</div>
+<div class="paragraph">
+<p>instance Traversable Tree where
+  traverse _ Empty = pure Empty
+  traverse f (Leaf a) = Leaf &lt;$&gt; f a
+  traverse f (Node tl a tr) = Node &lt;$&gt; (traverse f tl) &lt;*&gt; (f a) &lt;*&gt; (traverse f tr)</p>
+</div>
+<div class="paragraph">
+<p>instance Arbitrary a &#8658; Arbitrary (Tree a) where
+  arbitrary = do
+    x &#8592; arbitrary
+    l &#8592; arbitrary
+    r &#8592; arbitrary
+    frequency [(1, return Empty),
+               (1, return (Leaf x)),
+               (1, return (Node l x r))]</p>
+</div>
+<div class="paragraph">
+<p>instance Eq a &#8658; EqProp (Tree a) where (=-=) = eq</p>
+</div>
+<div class="paragraph">
+<p>main = do
+  let trigger = undefined :: Tree (Int, String, [Int])
+  quickBatch (traversable trigger)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-04-26 22:40:08 CEST
+Last updated 2016-04-29 17:51:40 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">

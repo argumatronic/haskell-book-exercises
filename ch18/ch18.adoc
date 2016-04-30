@@ -44,7 +44,7 @@ include::ch18_18.7_2.hs[]
 ----
 include::ch18_18.7_3.hs[]
 ----
-. pretty cool, I ahd to fix the `Arbitrary` instance for `List`. I had it broken before.
+. pretty cool, I had to fix the `Arbitrary` instance for `List`. I had it broken before.
 +
 [source]
 ----

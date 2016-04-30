@@ -1,0 +1,54 @@
+== 21 Traversable
+=== 21.12 Chapter Exercises
+==== Traversable instances
+. Identity
++
+[source]
+----
+include::ch21_21.12_1.hs[]
+----
+. Constant
++
+[source]
+----
+include::ch21_21.12_2.hs[]
+----
+. Maybe
++
+[source]
+----
+include::ch21_21.12_3.hs[]
+----
+. List
++
+[source]
+----
+include::ch21_21.12_4.hs[]
+----
+. Tree
++
+[source]
+----
+include::ch21_21.12_5.hs[]
+----
+----
+. Tree'
++
+[source]
+----
+include::ch21_21.12_6.hs[]
+----
+. S
++
+NOTE: tests are passing, but I kind of hacked it until it compiled.
++
+[source]
+----
+include::ch21_21.12_7.hs[]
+----
+
+==== Instances for Tree
+[source]
+----
+include::ch21_21.12_8.hs[]
+----
