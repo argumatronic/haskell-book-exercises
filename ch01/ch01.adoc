@@ -4,6 +4,7 @@
 . b) `λxy.xz` equals `λmn.mz`
 . c) `λxy.xxy` equals `λa(λb).aab` although it should be `λa(λb.aab)` I think
 . b) `λxyz.zx` equals `λtos.st`
+
 === 1.11 Exercises
 ==== Combinators
 Combinator is lambda term with no free variable

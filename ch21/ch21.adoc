@@ -31,7 +31,6 @@ include::ch21_21.12_4.hs[]
 ----
 include::ch21_21.12_5.hs[]
 ----
-----
 . Tree'
 +
 [source]
