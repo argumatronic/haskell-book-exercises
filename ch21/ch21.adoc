@@ -39,7 +39,7 @@ include::ch21_21.12_6.hs[]
 ----
 . S
 +
-NOTE: tests are passing, but I kind of hacked it until it compiled.
+NOTE: tests are passing, but I kind of hacked it until it compiled. Also, hardcoded use of `[]` for the inner type. Don't know how to generate one :(
 +
 [source]
 ----

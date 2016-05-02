@@ -5,6 +5,8 @@ import Test.QuickCheck.Classes (traversable)
 newtype Identity a = Identity a
   deriving (Eq, Ord, Show)
 
+type TI = Identity
+
 instance Functor Identity where
   fmap f (Identity a) = Identity (f a)
 
@@ -23,5 +25,5 @@ instance Arbitrary a => Arbitrary (Identity a) where
 instance Eq a => EqProp (Identity a) where (=-=) = eq
 
 main = do
-  let trigger = undefined :: Identity (Int, Int, [Int])
+  let trigger = undefined :: TI (Int, Int, [Int])
   quickBatch (traversable trigger)

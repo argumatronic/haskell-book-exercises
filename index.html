@@ -529,9 +529,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_13_building_projects_in_haskell">13 Building projects in Haskell</a>
 <ul class="sectlevel3">
 <li><a href="#_differences_between_cabal_and_stack">Differences between cabal and stack</a></li>
-<li><a href="#_13_2_managing_projects_with_cabal">13.2 Managing projects with Cabal</a></li>
-<li><a href="#_13_4_importing_modules">13.4 Importing modules</a></li>
-<li><a href="#_13_8_loading_code_from_another_project">13.8 Loading code from another project</a></li>
+<li><a href="#_13_3_working_with_a_basic_project">13.3 Working with a basic project</a></li>
+<li><a href="#_13_7_more_on_importing_modules">13.7 More on importing modules</a></li>
 <li><a href="#_13_9_do_syntax_and_io">13.9 do syntax and IO</a></li>
 <li><a href="#_13_15_chapter_exercises">13.15 Chapter exercises</a></li>
 </ul>
@@ -5842,9 +5841,6 @@ treeBuild n = unfold f 0
 <h2 id="_13_building_projects_in_haskell">13 Building projects in Haskell</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Used <code>stack</code> instead of <code>cabal</code></p>
-</div>
-<div class="paragraph">
 <p>Files at <a href="https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13" class="bare">https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13</a></p>
 </div>
 <div class="paragraph">
@@ -5882,38 +5878,13 @@ treeBuild n = unfold f 0
 </div>
 </div>
 <div class="sect2">
-<h3 id="_13_2_managing_projects_with_cabal">13.2 Managing projects with Cabal</h3>
-<div class="sect3">
-<h4 id="_hello_haskell">hello-haskell</h4>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><code>stack new hello-haskell</code></p>
-</li>
-<li>
-<p><code>cd hello-haskell</code></p>
-</li>
-<li>
-<p>make changes needed</p>
-</li>
-<li>
-<p><code>stack build</code></p>
-</li>
-<li>
-<p><code>stack exec hello-haskell-exe</code></p>
-</li>
-<li>
-<p>if you need REPL with project loaded <code>stack repl</code></p>
-</li>
-</ol>
-</div>
+<h3 id="_13_3_working_with_a_basic_project">13.3 Working with a basic project</h3>
 <div class="paragraph">
-<p>Sources at <a href="https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello-haskell" class="bare">https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello-haskell</a></p>
-</div>
+<p>All the changes over the whole chapter at <a href="https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello" class="bare">https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_13_4_importing_modules">13.4 Importing modules</h3>
+<h3 id="_13_7_more_on_importing_modules">13.7 More on importing modules</h3>
 <div class="sect3">
 <h4 id="_intermission_check_your_understanding">Intermission: Check your understanding</h4>
 <div class="olist arabic">
@@ -5944,18 +5915,6 @@ treeBuild n = unfold f 0
 </div>
 </li>
 </ol>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_13_8_loading_code_from_another_project">13.8 Loading code from another project</h3>
-<div class="sect3">
-<h4 id="_call_em_up">call-em-up</h4>
-<div class="paragraph">
-<p>Sources at <a href="https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/call-em-up" class="bare">https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/call-em-up</a></p>
-</div>
-<div class="paragraph">
-<p>call-em-up sees hello-haskell by including <code>- ../hello-haskell</code> in <code>packages</code> section in <code>stack.yaml</code>. Not sure if this is the right way.</p>
 </div>
 </div>
 </div>
@@ -10008,7 +9967,7 @@ main = do
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-tests are passing, but I kind of hacked it until it compiled.
+tests are passing, but I kind of hacked it until it compiled. Also, hardcoded use of <code>[]</code> for the inner type. Don&#8217;t know how to generate one :(
 </td>
 </tr>
 </table>
@@ -10078,6 +10037,12 @@ instance Foldable Tree where
   foldMap _ Empty = mempty
   foldMap f (Leaf a) = f a
   foldMap f (Node tl a tr) = (foldMap f tl) &lt;&gt; (f a) &lt;&gt; (foldMap f tr)
+  -- the extra credit :)
+  -- I need Monoid, but I cannot get it :/
+  -- the Endo trick is now beyond me
+  -- foldr f z Empty = z
+  -- foldr f z (Leaf a) = f a z
+  -- foldr f z (Node tl a tr) = (foldr f z tl) &lt;&gt; (f a z) &lt;&gt; (foldr f z tr)
 
 instance Traversable Tree where
   traverse _ Empty = pure Empty

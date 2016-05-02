@@ -1,5 +1,4 @@
 == 13 Building projects in Haskell
-Used `stack` instead of `cabal`
 
 Files at https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13
 
@@ -17,19 +16,10 @@ http://docs.haskellstack.org/en/stable/README.html
 . `stack exec proj-exe`
 . `stack ghci` or `stack repl` - they appear to be identical
 
-=== 13.2 Managing projects with Cabal
+=== 13.3 Working with a basic project
+All the changes over the whole chapter at https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello
 
-==== hello-haskell
-. `stack new hello-haskell`
-. `cd hello-haskell`
-. make changes needed
-. `stack build`
-. `stack exec hello-haskell-exe`
-. if you need REPL with project loaded `stack repl`
-
-Sources at https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/hello-haskell
-
-=== 13.4 Importing modules
+=== 13.7 More on importing modules
 ==== Intermission: Check your understanding
 . `forever` and `when`
 . all the import without `qualified` keyword
@@ -38,13 +28,6 @@ Sources at https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/h
 .. just look for what is after the `as` keyword in the imports
 .. `Filesystem`
 .. `Control.Monad`
-
-=== 13.8 Loading code from another project
-
-==== call-em-up
-Sources at https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch13/call-em-up
-
-call-em-up sees hello-haskell by including `- ../hello-haskell` in `packages` section in `stack.yaml`. Not sure if this is the right way.
 
 === 13.9 do syntax and IO
 

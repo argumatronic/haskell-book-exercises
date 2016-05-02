@@ -6,6 +6,8 @@ newtype Constant a b =
   Constant { getConstant :: a }
   deriving (Eq, Ord, Show)
 
+type TI a = Constant a
+
 instance Functor (Constant a) where
   fmap _ (Constant a) = Constant a
   -- does not work, why?
@@ -26,5 +28,5 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Constant a b) where
 instance (Eq a, Eq b) => EqProp (Constant a b) where (=-=) = eq
 
 main = do
-  let trigger = undefined :: Constant Int (Int, Int, [Int])
+  let trigger = undefined :: TI Int (Int, Int, [Int])
   quickBatch (traversable trigger)

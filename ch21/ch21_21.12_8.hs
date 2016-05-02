@@ -20,6 +20,12 @@ instance Foldable Tree where
   foldMap _ Empty = mempty
   foldMap f (Leaf a) = f a
   foldMap f (Node tl a tr) = (foldMap f tl) <> (f a) <> (foldMap f tr)
+  -- the extra credit :)
+  -- I need Monoid, but I cannot get it :/
+  -- the Endo trick is now beyond me
+  -- foldr f z Empty = z
+  -- foldr f z (Leaf a) = f a z
+  -- foldr f z (Node tl a tr) = (foldr f z tl) <> (f a z) <> (foldr f z tr)
 
 instance Traversable Tree where
   traverse _ Empty = pure Empty

@@ -1,7 +1,8 @@
 module Main where
 
-import System.IO
+import DogsRule
 import Hello
+import System.IO
 
 main :: IO ()
 main = do
@@ -9,3 +10,4 @@ main = do
   putStr "Please input your name: "
   name <- getLine
   sayHello name
+  dogs

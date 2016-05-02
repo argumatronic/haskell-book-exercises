@@ -7,8 +7,6 @@ import Data.List (intersperse)
 import System.Exit (exitSuccess)
 import System.Random (randomRIO)
 
-import Lib
-
 -- type WordList = [String]
 
 newtype WordList =
