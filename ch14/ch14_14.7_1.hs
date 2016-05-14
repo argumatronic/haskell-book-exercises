@@ -1,4 +1,4 @@
-import Test.QuickCheck (sample, elements, frequency, Gen)
+import Test.QuickCheck (sample, oneof, frequency, Gen)
 
 data Fool =
       Fulse
@@ -6,7 +6,7 @@ data Fool =
     deriving (Eq, Show)
 
 genFool :: Gen Fool
-genFool = elements [Fulse, Frue]
+genFool = oneof [Fulse, Frue]
 
 genFoolMoreFulse :: Gen Fool
 genFoolMoreFulse = frequency [(2, return Fulse),

@@ -3,12 +3,9 @@
 
 https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch14/addition
 
-. `stack build`
-. `stack test`
-
 [source]
 ----
-include::addition/test/Spec.hs[]
+include::addition/Addition.hs[]
 ----
 
 === 14.5 Morse code
@@ -19,8 +16,9 @@ https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch14/morsecode
 ----
 include::morsecode/test/Spec.hs[]
 ----
+I have `morsecode` instead of `morse` and loadding tests is `stack ghci morsecode:morsecode-test`
 
-=== 14.6 Chapter Exercises
+=== 14.7 Chapter Exercises
 ==== Validating numbers into words
 https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch14/wordnumber
 
@@ -30,7 +28,9 @@ include::wordnumber/test/Spec.hs[]
 ----
 
 ==== Using QuickCheck
-CAUTION: exercises 8 I have no idea
+CAUTION: had to use `Test.QuickCheck.Function` in point 8 to make it work
+
+Run tests: `stack test`
 
 . propHalf `pass:[+++] OK, passed 100 tests.`
 . propSort `pass:[+++] OK, passed 100 tests.`
@@ -60,7 +60,9 @@ powerCommutative
 0
 ....
 . propReverse `pass:[+++] OK, passed 100 tests.`
-. NOT DONE
+. applyProp `pass:[+++] OK, passed 100 tests.`
++
+composeProp `pass:[+++] OK, passed 100 tests.`
 . inConcatProp 
 +
 ....
@@ -91,7 +93,7 @@ include::usingquickcheck/test/Spec.hs[]
 Floating point precission cannot guarantee equality
 [source]
 ----
-include::ch14_14.6_failure.hs[]
+include::ch14_14.7_failure.hs[]
 ----
 ....
 *Main> main 
@@ -103,7 +105,7 @@ include::ch14_14.6_failure.hs[]
 
 [source]
 ----
-include::ch14_14.6_indepotence.hs[]
+include::ch14_14.7_indepotence.hs[]
 ----
 ....
 +++ OK, passed 100 tests.
@@ -114,19 +116,19 @@ include::ch14_14.6_indepotence.hs[]
 
 [source]
 ----
-include::ch14_14.6_1.hs[]
+include::ch14_14.7_1.hs[]
 ----
 
-=== Hangman testing
+==== Hangman testing
 WARNING: not done, will have to come back to this later
 [source]
 ----
-include::ch14_14.6_hangman.hs[]
+include::ch14_14.7_hangman.hs[]
 ----
 
 ==== Validating ciphers
 WARNING: need to do proper generators
 [source]
 ----
-include::ch14_14.6_2.hs[]
+include::ch14_14.7_2.hs[]
 ----

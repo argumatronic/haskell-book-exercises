@@ -1,0 +1,78 @@
+== 22 Reader
+=== 22.2 A new beginning
+[source]
+----
+include::ch22_22.2_1.hs[]
+----
+==== Short Exercise
+[source]
+----
+include::ch22_22.2_2.hs[]
+----
+
+=== 22.5 But uh, Reader?
+==== Exercise
+It is correct, but cannot make it compile. Even after installing `mtl` package, I get `Not in scope: data constructor 'Reader'`.
+
+So i added the `newtype Reader` definition by hand. I tought this is generally available 
+[source]
+----
+include::ch22_22.5_1.hs[]
+----
+
+=== 22.6 Functions have an Applicative too
+==== Exercise
+. `myLiftA2`, I feel like I am cheating. 
++
+[source]
+----
+include::ch22_22.6_1.hs[]
+----
+. `asks`
++
+[source]
+----
+include::ch22_22.6_2.hs[]
+----
+. `Applicative`, had to also make `Functor` for it :|
++
+[source]
+----
+include::ch22_22.6_3.hs[]
+----
+. I would explain it as implementation of `Reader`.
++
+[source]
+----
+include::ch22_22.6_4.hs[]
+----
+
+=== 22.7 The Monad of functions
+==== Exercise
+. Reader Monad
++
+[source]
+----
+include::ch22_22.7_1.hs[]
+----
+. Is this right? It compiles and looks similar to Applicative.
++
+[source]
+----
+include::ch22_22.7_2.hs[]
+----
+
+=== 22.11 Chapter Exercises
+==== A warm-up stretch
+ok.....
+[source]
+----
+include::ch22_22.11_1.hs[]
+----
+
+==== Rewriting Shawty
+use ReaderT, I will come back later
+[source]
+----
+include::ch22_22.11_2.hs[]
+----

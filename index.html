@@ -539,8 +539,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_14_3_conventional_testing">14.3 Conventional testing</a></li>
 <li><a href="#_14_5_morse_code">14.5 Morse code</a></li>
-<li><a href="#_14_6_chapter_exercises">14.6 Chapter Exercises</a></li>
-<li><a href="#_hangman_testing">Hangman testing</a></li>
+<li><a href="#_14_7_chapter_exercises">14.7 Chapter Exercises</a></li>
 </ul>
 </li>
 <li><a href="#_15_monoid_semigroup">15 Monoid, Semigroup</a>
@@ -585,6 +584,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_21_traversable">21 Traversable</a>
 <ul class="sectlevel2">
 <li><a href="#_21_12_chapter_exercises">21.12 Chapter Exercises</a></li>
+</ul>
+</li>
+<li><a href="#_22_reader">22 Reader</a>
+<ul class="sectlevel2">
+<li><a href="#_22_2_a_new_beginning">22.2 A new beginning</a></li>
+<li><a href="#_22_5_but_uh_reader">22.5 But uh, Reader?</a></li>
+<li><a href="#_22_6_functions_have_an_applicative_too">22.6 Functions have an Applicative too</a></li>
+<li><a href="#_22_7_the_monad_of_functions">22.7 The Monad of functions</a></li>
+<li><a href="#_22_11_chapter_exercises">22.11 Chapter Exercises</a></li>
 </ul>
 </li>
 </ul>
@@ -6154,29 +6162,35 @@ gimmePerson = do
 <div class="paragraph">
 <p><a href="https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch14/addition" class="bare">https://github.com/lukleh/haskell-book-exercises/tree/gh-pages/ch14/addition</a></p>
 </div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p><code>stack build</code></p>
-</li>
-<li>
-<p><code>stack test</code></p>
-</li>
-</ol>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">module Main where
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">module Addition where
 
 import Test.Hspec
-import Test.QuickCheck
-import Addition
+import Test.QuickCheck (property)
+
+someFunc :: IO ()
+someFunc = putStrLn "some Func"
+
+dividedBy :: Integral a =&gt; a -&gt; a -&gt; (a, a)
+dividedBy num denom = go num denom 0
+  where go n
+          d count
+          | n &lt; d = (count, n)
+          | otherwise = go (n - d) d (count + 1)
+
+recMul :: (Eq a, Num a) =&gt; a -&gt; a -&gt; a
+recMul n m = go n m 0
+    where go n' m' acc
+            | m' == 0 = acc
+            | otherwise = go n' (m' - 1) (acc + n')
+
 
 main :: IO ()
 main = hspec $ do
   describe "Addition" $ do
     it "1 + 1 is greater than 1" $ do
-      (1 + 1) &gt; (1 :: Integer) `shouldBe` True
+      (1 + 1) &gt; 1 `shouldBe` True
     it "2 + 2 is equal to 4" $ do
       2 + 2 `shouldBe` 4
     it "15 divided by 3 is 5" $ do
@@ -6226,9 +6240,12 @@ main :: IO ()
 main = quickCheck prop_thereAndBackAgain</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>I have <code>morsecode</code> instead of <code>morse</code> and loadding tests is <code>stack ghci morsecode:morsecode-test</code></p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_14_6_chapter_exercises">14.6 Chapter Exercises</h3>
+<h3 id="_14_7_chapter_exercises">14.7 Chapter Exercises</h3>
 <div class="sect3">
 <h4 id="_validating_numbers_into_words">Validating numbers into words</h4>
 <div class="paragraph">
@@ -6270,10 +6287,13 @@ main = hspec $ do
 <i class="fa icon-caution" title="Caution"></i>
 </td>
 <td class="content">
-exercises 8 I have no idea
+had to use <code>Test.QuickCheck.Function</code> in point 8 to make it work
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Run tests: <code>stack test</code></p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -6326,7 +6346,10 @@ exercises 8 I have no idea
 <p>propReverse <code>+++ OK, passed 100 tests.</code></p>
 </li>
 <li>
-<p>NOT DONE</p>
+<p>applyProp <code>+++ OK, passed 100 tests.</code></p>
+<div class="paragraph">
+<p>composeProp <code>+++ OK, passed 100 tests.</code></p>
+</div>
 </li>
 <li>
 <p>inConcatProp</p>
@@ -6364,6 +6387,7 @@ exercises 8 I have no idea
 <pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck
 -- import Test.QuickCheck.Instances.List (anyList)
 import Test.QuickCheck.Modifiers (NonZero)
+import Test.QuickCheck.Function (apply, Fun(..))
 
 import Data.List (sort)
 
@@ -6426,9 +6450,13 @@ propReverse :: [Int] -&gt; Bool
 propReverse xs = (reverse . reverse) xs == xs
 
 -- 8.
--- applyProp = (f $ a) == (f a)
+applyProp :: Fun Int Int -&gt; Int -&gt; Bool
+applyProp (Fun _ f) a = (f $ a) == (f a)
 
--- composeProp = f . g == \x -&gt; f (g x)
+composeProp :: Fun Char Double -&gt; Fun Int Char -&gt; Int -&gt; Bool
+composeProp (Fun _ f) (Fun _ g) x = (f . g) x == f (g x)
+-- alternatively with apply :: Fun a b -&gt; a -&gt; b
+-- composeProp f g x = ((apply f) . (apply g)) x == (apply f) ((apply g) x)
 
 -- 9.
 inConcatProp :: String -&gt; String -&gt; Bool
@@ -6459,6 +6487,8 @@ main = do
   quickCheck powerAssociative
   quickCheck powerCommutative
   quickCheck propReverse
+  quickCheck applyProp
+  quickCheck composeProp
   quickCheck inConcatProp
   quickCheck concatProp
   quickCheck lenTakeProb
@@ -6537,7 +6567,7 @@ main = do
 <h4 id="_make_a_gen_random_generator_for_the_datatype">Make a Gen random generator for the datatype</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (sample, elements, frequency, Gen)
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Test.QuickCheck (sample, oneof, frequency, Gen)
 
 data Fool =
       Fulse
@@ -6545,7 +6575,7 @@ data Fool =
     deriving (Eq, Show)
 
 genFool :: Gen Fool
-genFool = elements [Fulse, Frue]
+genFool = oneof [Fulse, Frue]
 
 genFoolMoreFulse :: Gen Fool
 genFoolMoreFulse = frequency [(2, return Fulse),
@@ -6553,9 +6583,8 @@ genFoolMoreFulse = frequency [(2, return Fulse),
 </div>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_hangman_testing">Hangman testing</h3>
+<div class="sect3">
+<h4 id="_hangman_testing">Hangman testing</h4>
 <div class="admonitionblock warning">
 <table>
 <tr>
@@ -6597,6 +6626,7 @@ handleGuess puzzle guess = do
       putStrLn "This character wasn't in\
                 \ the word, try again."
       return (fillInCharacter puzzle guess)</code></pre>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -9735,6 +9765,8 @@ import Test.QuickCheck.Classes (traversable)
 newtype Identity a = Identity a
   deriving (Eq, Ord, Show)
 
+type TI = Identity
+
 instance Functor Identity where
   fmap f (Identity a) = Identity (f a)
 
@@ -9753,7 +9785,7 @@ instance Arbitrary a =&gt; Arbitrary (Identity a) where
 instance Eq a =&gt; EqProp (Identity a) where (=-=) = eq
 
 main = do
-  let trigger = undefined :: Identity (Int, Int, [Int])
+  let trigger = undefined :: TI (Int, Int, [Int])
   quickBatch (traversable trigger)</code></pre>
 </div>
 </div>
@@ -9769,6 +9801,8 @@ import Test.QuickCheck.Classes (traversable)
 newtype Constant a b =
   Constant { getConstant :: a }
   deriving (Eq, Ord, Show)
+
+type TI a = Constant a
 
 instance Functor (Constant a) where
   fmap _ (Constant a) = Constant a
@@ -9790,7 +9824,7 @@ instance (Arbitrary a, Arbitrary b) =&gt; Arbitrary (Constant a b) where
 instance (Eq a, Eq b) =&gt; EqProp (Constant a b) where (=-=) = eq
 
 main = do
-  let trigger = undefined :: Constant Int (Int, Int, [Int])
+  let trigger = undefined :: TI Int (Int, Int, [Int])
   quickBatch (traversable trigger)</code></pre>
 </div>
 </div>
@@ -10069,10 +10103,495 @@ main = do
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_22_reader">22 Reader</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_22_2_a_new_beginning">22.2 A new beginning</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Applicative
+
+hurr :: Num a =&gt; a -&gt; a
+hurr = (*2)
+
+durr :: Num a =&gt; a -&gt; a
+durr = (+10)
+
+m :: Num a =&gt; a -&gt; a
+m = hurr . durr
+
+m' :: Integer -&gt; Integer
+m' = fmap hurr durr
+
+m2 :: Integer -&gt; Integer
+m2 = (+) &lt;$&gt; hurr &lt;*&gt; durr
+
+m3 :: Integer -&gt; Integer
+m3 = liftA2 (+) hurr durr
+
+hurrDurr :: Integer -&gt; Integer
+hurrDurr = do
+    a &lt;- hurr
+    b &lt;- durr
+    return (a + b)</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_short_exercise">Short Exercise</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Data.Char
+import Control.Applicative (liftA2)
+
+cap :: [Char] -&gt; [Char]
+cap xs = map toUpper xs
+
+rev :: [Char] -&gt; [Char]
+rev xs = reverse xs
+
+composed :: [Char] -&gt; [Char]
+composed = cap . rev
+
+fmapped :: [Char] -&gt; [Char]
+fmapped = fmap cap rev
+
+tupled :: [Char] -&gt; ([Char], [Char])
+tupled = (,) &lt;$&gt; cap &lt;*&gt; rev
+
+tupled' :: [Char] -&gt; ([Char], [Char])
+tupled' = liftA2 (,) cap rev
+
+tupled_do :: [Char] -&gt; ([Char], [Char])
+tupled_do = do
+  a &lt;- rev
+  b &lt;- cap
+  return (a, b)
+
+tupled_bind :: [Char] -&gt; ([Char], [Char])
+tupled_bind = rev &gt;&gt;= \x1 -&gt; cap &gt;&gt;= \x2 -&gt; return (x1, x2)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_22_5_but_uh_reader">22.5 But uh, Reader?</h3>
+<div class="sect3">
+<h4 id="_exercise_5">Exercise</h4>
+<div class="paragraph">
+<p>It is correct, but cannot make it compile. Even after installing <code>mtl</code> package, I get <code>Not in scope: data constructor 'Reader'</code>.</p>
+</div>
+<div class="paragraph">
+<p>So i added the <code>newtype Reader</code> definition by hand. I tought this is generally available</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+ask :: Reader a a
+ask = Reader id</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_22_6_functions_have_an_applicative_too">22.6 Functions have an Applicative too</h3>
+<div class="sect3">
+<h4 id="_exercise_6">Exercise</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>myLiftA2</code>, I feel like I am cheating.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">myLiftA2 :: Applicative f =&gt;  (a -&gt; b -&gt; c) -&gt; f a -&gt; f b -&gt; f c
+myLiftA2 a b c = a &lt;$&gt; b &lt;*&gt; c</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>asks</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+asks :: (r -&gt; a) -&gt; Reader r a
+asks f = Reader f</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>Applicative</code>, had to also make <code>Functor</code> for it :|</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">-- you'll need this pragma
+{-# LANGUAGE InstanceSigs #-}
+
+newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+instance Functor (Reader r) where
+  fmap f (Reader ra) = Reader $ (f . ra)
+
+instance Applicative (Reader r) where
+  pure :: a -&gt; Reader r a
+  pure a = Reader $ \r -&gt; a
+
+  (&lt;*&gt;) :: Reader r (a -&gt; b)
+        -&gt; Reader r a
+        -&gt; Reader r b
+
+  (Reader rab) &lt;*&gt; (Reader ra) =
+    Reader $ \r -&gt; rab r (ra r)</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>I would explain it as implementation of <code>Reader</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">{-# LANGUAGE InstanceSigs #-}
+
+import Control.Applicative (liftA2)
+
+newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+instance Functor (Reader r) where
+  fmap f (Reader ra) = Reader $ (f . ra)
+
+instance Applicative (Reader r) where
+  pure :: a -&gt; Reader r a
+  pure a = Reader $ \r -&gt; a
+
+  (&lt;*&gt;) :: Reader r (a -&gt; b)
+        -&gt; Reader r a
+        -&gt; Reader r b
+
+  (Reader rab) &lt;*&gt; (Reader ra) =
+    Reader $ \r -&gt; rab r (ra r)
+
+newtype HumanName =
+  HumanName String
+  deriving (Eq, Show)
+
+newtype DogName =
+  DogName String
+  deriving (Eq, Show)
+
+newtype Address =
+  Address String
+  deriving (Eq, Show)
+
+data Person =
+  Person {
+    humanName :: HumanName
+  , dogName :: DogName
+  , address :: Address
+  } deriving (Eq, Show)
+
+data Dog =
+  Dog {
+    dogsName :: DogName
+  , dogsAddress :: Address
+  } deriving (Eq, Show)
+
+getDogR :: Reader Person Dog
+getDogR = Reader $ liftA2 Dog dogName address</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_22_7_the_monad_of_functions">22.7 The Monad of functions</h3>
+<div class="sect3">
+<h4 id="_exercise_7">Exercise</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Reader Monad</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">{-# LANGUAGE InstanceSigs #-}
+
+newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+instance Functor (Reader r) where
+  fmap f (Reader ra) = Reader $ (f . ra)
+
+instance Applicative (Reader r) where
+  pure :: a -&gt; Reader r a
+  pure a = Reader $ \r -&gt; a
+
+  (&lt;*&gt;) :: Reader r (a -&gt; b)
+        -&gt; Reader r a
+        -&gt; Reader r b
+
+  (Reader rab) &lt;*&gt; (Reader ra) =
+    Reader $ \r -&gt; rab r (ra r)
+
+instance Monad (Reader r) where
+  return = pure
+  (&gt;&gt;=) :: Reader r a
+        -&gt; (a -&gt; Reader r b)
+        -&gt; Reader r b
+  (Reader ra) &gt;&gt;= aRb =
+    Reader $ \r -&gt; runReader (aRb $ ra r) $ r</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Is this right? It compiles and looks similar to Applicative.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">{-# LANGUAGE InstanceSigs #-}
+
+import Control.Monad (liftM2)
+
+newtype Reader r a = Reader { runReader :: r -&gt; a }
+
+instance Functor (Reader r) where
+  fmap f (Reader ra) = Reader $ (f . ra)
+
+instance Applicative (Reader r) where
+  pure :: a -&gt; Reader r a
+  pure a = Reader $ \r -&gt; a
+
+  (&lt;*&gt;) :: Reader r (a -&gt; b)
+        -&gt; Reader r a
+        -&gt; Reader r b
+
+  (Reader rab) &lt;*&gt; (Reader ra) =
+    Reader $ \r -&gt; rab r (ra r)
+
+instance Monad (Reader r) where
+  return = pure
+  (&gt;&gt;=) :: Reader r a
+        -&gt; (a -&gt; Reader r b)
+        -&gt; Reader r b
+  (Reader ra) &gt;&gt;= aRb =
+    Reader $ \r -&gt; runReader (aRb $ ra r) $ r
+
+newtype HumanName =
+  HumanName String
+  deriving (Eq, Show)
+
+newtype DogName =
+  DogName String
+  deriving (Eq, Show)
+
+newtype Address =
+  Address String
+  deriving (Eq, Show)
+
+data Person =
+  Person {
+    humanName :: HumanName
+  , dogName :: DogName
+  , address :: Address
+  } deriving (Eq, Show)
+
+data Dog =
+  Dog {
+    dogsName :: DogName
+  , dogsAddress :: Address
+  } deriving (Eq, Show)
+
+getDogRM :: Reader Person Dog
+getDogRM = Reader $ liftM2 Dog dogName address</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_22_11_chapter_exercises">22.11 Chapter Exercises</h3>
+<div class="sect3">
+<h4 id="_a_warm_up_stretch">A warm-up stretch</h4>
+<div class="paragraph">
+<p>ok&#8230;&#8203;..</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Applicative
+import Data.Maybe
+
+x = [1, 2, 3]
+y = [4, 5, 6]
+z = [7, 8, 9]
+
+-- lookup :: Eq a =&gt; a -&gt; [(a, b)] -&gt; Maybe b
+
+-- zip x and y using 3 as the lookup key
+xs :: Maybe Integer
+xs = lookup 3 $ zip x y
+
+-- zip y and z using 6 as the lookup key
+ys :: Maybe Integer
+ys = lookup 6 $ zip y z
+
+-- it's also nice to have one that
+-- will return Nothing, like this one
+-- zip x and y using 4 as the lookup key
+zs :: Maybe Integer
+zs = lookup 4 $ zip x y
+
+-- now zip x and z using a variable lookup key
+z' :: Integer -&gt; Maybe Integer
+z' n = lookup n $ zip x z
+
+x1 :: Maybe (Integer, Integer)
+x1 = (,) &lt;$&gt; xs &lt;*&gt; ys
+
+x2 :: Maybe (Integer, Integer)
+x2 = (,) &lt;$&gt; ys &lt;*&gt; zs
+
+x3 :: Integer -&gt; (Maybe Integer, Maybe Integer)
+x3 n = (z' n, z' n)
+
+summed :: Num c =&gt; (c, c) -&gt; c
+summed = uncurry (+)
+
+bolt :: Integer -&gt; Bool
+-- use &amp;&amp;, &gt;3, &lt;8
+bolt = liftA2 (&amp;&amp;) (&gt;3) (&lt;8)
+
+sequA :: Integral a =&gt; a -&gt; [Bool]
+sequA m = sequenceA [(&gt;3), (&lt;8), even] m
+
+s' = summed &lt;$&gt; ((,) &lt;$&gt; xs &lt;*&gt; ys)
+
+main :: IO ()
+main = do
+  print $ sequenceA [Just 3, Just 2, Just 1]
+  print $ sequenceA [x, y]
+  print $ sequenceA [xs, ys]
+  print $ summed &lt;$&gt; ((,) &lt;$&gt; xs &lt;*&gt; ys)
+  print $ fmap summed ((,) &lt;$&gt; xs &lt;*&gt; zs)
+  print $ bolt 7
+  print $ fmap bolt z
+  print $ sequenceA [(&gt;3), (&lt;8), even] 7
+  print $ foldr (&amp;&amp;) True $ sequA 7
+  print $ sequA $ fromMaybe 0 s'
+  print $ bolt $ fromMaybe 0 ys
+  print $ bolt $ fromMaybe 0 (z' 3)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rewriting_shawty">Rewriting Shawty</h4>
+<div class="paragraph">
+<p>use ReaderT, I will come back later</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">{-# LANGUAGE OverloadedStrings #-}
+
+module Main where
+
+import Control.Monad (replicateM)
+import Control.Monad.IO.Class (liftIO)
+import qualified Data.ByteString.Char8 as BC
+import Data.Text.Encoding (decodeUtf8, encodeUtf8)
+import qualified Data.Text.Lazy as TL
+import qualified Database.Redis as R
+import Network.URI (URI, parseURI)
+import qualified System.Random as SR
+import Web.Scotty
+
+alphaNum :: String
+alphaNum = ['A'..'Z'] ++ ['0'..'9']
+
+randomElement :: String -&gt; IO Char
+randomElement xs = do
+  let maxIndex :: Int
+      maxIndex = length xs - 1
+  -- Right of arrow is IO Int, so randomDigit is Int
+  randomDigit &lt;- SR.randomRIO (0, maxIndex) :: IO Int
+  return (xs !! randomDigit)
+
+shortyGen :: IO String
+shortyGen =
+  replicateM 7 (randomElement alphaNum)
+
+saveURI :: R.Connection
+        -&gt; BC.ByteString
+        -&gt; BC.ByteString
+        -&gt; IO (Either R.Reply R.Status)
+saveURI conn shortURI uri =
+  R.runRedis conn $ R.set shortURI uri
+
+getURI  :: R.Connection
+        -&gt; BC.ByteString
+        -&gt; IO (Either R.Reply (Maybe BC.ByteString))
+getURI conn shortURI = R.runRedis conn $ R.get shortURI
+
+linkShorty :: String -&gt; String
+linkShorty shorty =
+  concat [ "&lt;a href=\""
+         , shorty
+         , "\"&gt;Copy and paste your short URL&lt;/a&gt;"
+         ]
+
+shortyCreated :: Show a =&gt; a -&gt; String -&gt; TL.Text
+shortyCreated resp shawty =
+  TL.concat [ TL.pack (show resp)
+            , " shorty is: ", TL.pack (linkShorty shawty)
+            ]
+
+shortyAintUri :: TL.Text -&gt; TL.Text
+shortyAintUri uri =
+  TL.concat [ uri
+            , " wasn't a url, did you forget http://?"
+            ]
+
+shortyFound :: TL.Text -&gt; TL.Text
+shortyFound tbs =
+  TL.concat ["&lt;a href=\"", tbs, "\"&gt;", tbs, "&lt;/a&gt;"]
+
+app :: R.Connection
+    -&gt; ScottyM ()
+app rConn = do
+  get "/" $ do
+    uri &lt;- param "uri"
+    let parsedUri :: Maybe URI
+        parsedUri = parseURI (TL.unpack uri)
+    case parsedUri of
+      Just _  -&gt; do
+        shawty &lt;- liftIO shortyGen
+        let shorty = BC.pack shawty
+            uri' = encodeUtf8 (TL.toStrict uri)
+        resp &lt;- liftIO (saveURI rConn shorty uri')
+        html (shortyCreated resp shawty)
+      Nothing -&gt; text (shortyAintUri uri)
+  get "/:short" $ do
+    short &lt;- param "short"
+    uri &lt;- liftIO (getURI rConn short)
+    case uri of
+      Left reply -&gt; text (TL.pack (show reply))
+      Right mbBS -&gt; case mbBS of
+        Nothing -&gt; text "uri not found"
+        Just bs -&gt; html (shortyFound tbs)
+          where tbs :: TL.Text
+                tbs = TL.fromStrict (decodeUtf8 bs)
+
+main :: IO ()
+main = do
+  rConn &lt;- R.connect R.defaultConnectInfo
+  scotty 3000 (app rConn)</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-05-01 01:41:07 CEST
+Last updated 2016-05-02 22:56:32 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">

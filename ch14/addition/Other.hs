@@ -1,6 +1,3 @@
-module Main where
-
-import Addition
 import Test.QuickCheck
 
 main :: IO ()

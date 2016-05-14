@@ -1,6 +1,7 @@
 import Test.QuickCheck
 -- import Test.QuickCheck.Instances.List (anyList)
 import Test.QuickCheck.Modifiers (NonZero)
+import Test.QuickCheck.Function (apply, Fun(..))
 
 import Data.List (sort)
 
@@ -63,9 +64,13 @@ propReverse :: [Int] -> Bool
 propReverse xs = (reverse . reverse) xs == xs
 
 -- 8.
--- applyProp = (f $ a) == (f a)
+applyProp :: Fun Int Int -> Int -> Bool
+applyProp (Fun _ f) a = (f $ a) == (f a)
 
--- composeProp = f . g == \x -> f (g x)
+composeProp :: Fun Char Double -> Fun Int Char -> Int -> Bool
+composeProp (Fun _ f) (Fun _ g) x = (f . g) x == f (g x)
+-- alternatively with apply :: Fun a b -> a -> b 
+-- composeProp f g x = ((apply f) . (apply g)) x == (apply f) ((apply g) x)
 
 -- 9.
 inConcatProp :: String -> String -> Bool
@@ -96,6 +101,8 @@ main = do
   quickCheck powerAssociative
   quickCheck powerCommutative
   quickCheck propReverse
+  quickCheck applyProp
+  quickCheck composeProp
   quickCheck inConcatProp
   quickCheck concatProp
   quickCheck lenTakeProb
