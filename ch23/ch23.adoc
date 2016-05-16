@@ -1,0 +1,66 @@
+== 23 State
+=== 23.5 Throw down
+==== Exercises
+. `rollsToGetN`
++
+[source]
+----
+include::ch23_23.5_1.hs[]
+----
+. `rollsCountLogged`
++
+[source]
+----
+include::ch23_23.5_2.hs[]
+----
+
+=== 23.6 Write State for yourself
+Looks legit and compiles, what can go wrong? :)
+[source]
+----
+include::ch23_23.6_1.hs[]
+----
+
+=== 23.7 Get a coding job with one weird trick
+More of a list thing than state....
+[source]
+----
+include::ch23_23.7_1.hs[]
+----
+
+=== 23.8 Chapter exercises
+
+. `get`
++
+[source]
+----
+include::ch23_23.8_1.hs[]
+----
+. `put`
++
+[source]
+----
+include::ch23_23.8_2.hs[]
+----
+. `exec`
++
+WARNING: There is no data constructor `State` to pattern match on. Bug in the book?
++
+[source]
+----
+include::ch23_23.8_3.hs[]
+----
+. `eval`
++
+WARNING: same as with `exec`
++
+[source]
+----
+include::ch23_23.8_4.hs[]
+----
+. `modify`
++
+[source]
+----
+include::ch23_23.8_5.hs[]
+----

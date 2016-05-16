@@ -595,6 +595,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_22_11_chapter_exercises">22.11 Chapter Exercises</a></li>
 </ul>
 </li>
+<li><a href="#_23_state">23 State</a>
+<ul class="sectlevel2">
+<li><a href="#_23_5_throw_down">23.5 Throw down</a></li>
+<li><a href="#_23_6_write_state_for_yourself">23.6 Write State for yourself</a></li>
+<li><a href="#_23_7_get_a_coding_job_with_one_weird_trick">23.7 Get a coding job with one weird trick</a></li>
+<li><a href="#_23_8_chapter_exercises">23.8 Chapter exercises</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -10588,10 +10596,262 @@ main = do
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_23_state">23 State</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_23_5_throw_down">23.5 Throw down</h3>
+<div class="sect3">
+<h4 id="_exercises_3">Exercises</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>rollsToGetN</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import System.Random
+
+rollsToGetN :: Int -&gt; StdGen -&gt; Int
+rollsToGetN n g = go 0 0 g
+  where go :: Int -&gt; Int -&gt; StdGen -&gt; Int
+        go sum count gen
+          | sum &gt;= n = count
+          | otherwise =
+            let (die, nextGen) = randomR (1, 6) gen
+            in go (sum + die) (count + 1) nextGen</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>rollsCountLogged</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import System.Random
+
+data Die =
+    DieOne
+  | DieTwo
+  | DieThree
+  | DieFour
+  | DieFive
+  | DieSix
+  deriving (Eq, Show)
+
+intToDie :: Int -&gt; Die
+intToDie n =
+  case n of
+    1 -&gt; DieOne
+    2 -&gt; DieTwo
+    3 -&gt; DieThree
+    4 -&gt; DieFour
+    5 -&gt; DieFive
+    6 -&gt; DieSix
+
+rollsCountLogged :: Int -&gt; StdGen -&gt; (Int, [Die])
+rollsCountLogged n g = go 0 0 [] g
+  where go :: Int -&gt; Int -&gt; [Die] -&gt; StdGen -&gt; (Int, [Die])
+        go sum count acc gen
+          | sum &gt;= n = (count, reverse acc)
+          | otherwise =
+            let (die, nextGen) = randomR (1, 6) gen
+            in go (sum + die) (count + 1) (intToDie die : acc) nextGen</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_23_6_write_state_for_yourself">23.6 Write State for yourself</h3>
+<div class="paragraph">
+<p>Looks legit and compiles, what can go wrong? :)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">{-# LANGUAGE InstanceSigs #-}
+
+newtype Moi s a =
+  Moi { runMoi :: s -&gt; (a, s) }
+
+instance Functor (Moi s) where
+  fmap :: (a -&gt; b) -&gt; Moi s a -&gt; Moi s b
+  fmap f (Moi g) = Moi $ \s -&gt; let (a, b) = g s
+                               in (f a, b)
+
+--Prelude&gt; runMoi ((+1) &lt;$&gt; (Moi $ \s -&gt; (0, s))) 0
+--(1,0)
+
+instance Applicative (Moi s) where
+  pure :: a -&gt; Moi s a
+  pure a = Moi $ \s -&gt; (a, s)
+
+  (&lt;*&gt;) :: Moi s (a -&gt; b)
+        -&gt; Moi s a
+        -&gt; Moi s b
+  (Moi f) &lt;*&gt; (Moi g) = Moi $ \s -&gt; let fab = fst $ f s
+                                        (a, b) = g s
+                                    in (fab a, b)
+
+instance Monad (Moi s) where
+  return = pure
+
+  (&gt;&gt;=) :: Moi s a
+        -&gt; (a -&gt; Moi s b)
+        -&gt; Moi s b
+  (Moi f) &gt;&gt;= g = Moi $ \s -&gt; let a = fst $ f s
+                                  ms = runMoi $ g a
+                              in ms s</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_23_7_get_a_coding_job_with_one_weird_trick">23.7 Get a coding job with one weird trick</h3>
+<div class="paragraph">
+<p>More of a list thing than state&#8230;&#8203;.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad
+import Control.Monad.Trans.State
+
+fizzBuzz :: Integer -&gt; String
+fizzBuzz n | n `mod` 15 == 0 = "FizzBuzz"
+           | n `mod` 5 == 0 = "Fizz"
+           | n `mod` 3 == 0 = "Buzz"
+           | otherwise = show n
+
+fizzbuzzList :: [Integer] -&gt; [String]
+fizzbuzzList list =
+  execState (mapM_ addResult list) []
+
+addResult :: Integer -&gt; State [String] ()
+addResult n = do
+  xs &lt;- get
+  let result = fizzBuzz n
+  put (result : xs)
+
+fizzbuzzFromTo :: Integer -&gt; Integer -&gt; [String]
+fizzbuzzFromTo start end = fizzbuzzList $ enumFromThenTo end (end - 1) start
+
+main :: IO ()
+main =
+  mapM_ putStrLn $ fizzbuzzFromTo 1 100</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_23_8_chapter_exercises">23.8 Chapter exercises</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><code>get</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad.Trans.State hiding (get)
+
+get :: State s s
+get = state $ \s -&gt; (s, s)
+
+--Prelude&gt; runState get "curryIsAmaze"
+--("curryIsAmaze","curryIsAmaze")</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>put</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad.Trans.State hiding (put)
+
+put :: s -&gt; State s ()
+put = \s -&gt; state $ \x -&gt; ((), s)
+
+--Prelude&gt; runState (put "blah") "woot"
+--((),"blah")</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>exec</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+There is no data constructor <code>State</code> to pattern match on. Bug in the book?
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad
+import Control.Monad.Trans.State
+
+exec :: State s a -&gt; s -&gt; s
+exec (State sa) s = snd $ sa s
+
+--Prelude&gt; exec (put "wilma") "daphne"
+--"wilma"
+--Prelude&gt; exec get "scooby papu"
+--"scooby papu"</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>eval</code></p>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+same as with <code>exec</code>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">eval :: State s a -&gt; s -&gt; a
+eval (State sa) = ???
+
+--Prelude&gt; eval get "bunnicula"
+--"bunnicula"
+--Prelude&gt; eval get "stake a bunny"
+--"stake a bunny"</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p><code>modify</code></p>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-haskell" data-lang="haskell">import Control.Monad.Trans.State hiding (modify)
+
+modify :: (s -&gt; s) -&gt; State s ()
+modify f = state $ \s -&gt; ((), f s)
+
+--Prelude&gt; runState (modify (+1)) 0
+--((),1)
+--Prelude&gt; runState (modify (+1) &gt;&gt; modify (+1)) 0
+--((),2)</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-05-02 22:56:32 CEST
+Last updated 2016-05-16 23:28:39 CEST
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
